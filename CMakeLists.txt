@@ -12,4 +12,12 @@ add_executable(apex_simulator
         helper.cpp
         helper.h
         main.cpp
+        IQ.cpp
+        IQ.h
+        IQEntry.cpp
+        IQEntry.h
+        ROB.cpp
+        ROB.h
+        rob_entry.cpp
+        rob_entry.h
         Makefile)
