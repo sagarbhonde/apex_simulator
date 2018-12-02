@@ -26,10 +26,17 @@ enum Intruction_type
 
 enum SLOT_STATUS
 {
+    //todo:need to discuss. dummy now
     EXEUTING,
     WAITING_FOR_INPUT,
     COMPLETED,
-    UNALLOCATED
+    UNALLOCATED,
+    ALLOCATED
+};
+
+enum MISC
+{
+    VALID
 };
 
 #endif //CIRCULAR_QUEUE_HELPER_H

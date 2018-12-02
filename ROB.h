@@ -10,8 +10,8 @@
 
 class ROB
 {
-    Rob_entry rob_queue[ROB_SIZE];
 public:
+    Rob_entry rob_queue[ROB_SIZE];
 
     int head;
     int tail;
@@ -28,7 +28,7 @@ public:
     bool isFull();
     bool isempty();
     void print_slot_contents(int index); // For logging indivisual slot
-    friend ostream& operator<<(ostream& out, const ROB& rob); // For logging whole ROB .
+    friend ostream& operator<<(ostream& out, const ROB* rob); // For logging whole ROB .
 };
 
 #endif //CIRCULAR_QUEUE_ROB_H

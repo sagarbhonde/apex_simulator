@@ -31,6 +31,9 @@ APEX_cpu_init(const char* filename) {
 	/* Initialize IssueQueue */
 	cpu->iq = new IQ();
 
+	/* Initialize ROB */
+	cpu->rob = new ROB();
+
 	/* Initialize PC, Registers and all pipeline stages */
 	cpu->pc = 4000;
 	memset(cpu->regs, 0, sizeof(int) * 32);
@@ -91,12 +94,22 @@ void APEX_cpu_stop(APEX_CPU* cpu) {
 	for (int i = 0; i < IQ_SIZE; i++) {
 		(cpu->iq->issueQueue[i]).printIQEntry();
 	}
+
+	printf("=============== STATE OF ROB ==========\n\n");
+	cout<<cpu->rob<<endl;
+
+
 	/*printf("\n\n============== STATE OF DATA MEMORY =============\n\n");
 	 for (int i = 0; i < 100; i++) {
 	 printf("|\tMEM[%d]\t|\tData Value = %d\t|\n", i, cpu->data_memory[i]);
 	 }*/
 
 	free(cpu->code_memory);
+
+	// delete IQ and ROB
+	delete cpu->iq;
+	delete cpu->rob;
+
 	free(cpu);
 }
 
@@ -247,6 +260,17 @@ int decode(APEX_CPU* cpu) {
 			//Entry is added to IQ, go ahead.
 			cout << "entry added" << endl;
 		}
+
+		//======== Add to ROB ================================
+		// @todo: More fields needs to be set.
+		//
+		Rob_entry rob_entry;
+		rob_entry.setStatus(VALID);
+		rob_entry.setPc_value(stage->pc);
+		rob_entry.setArchiteture_register(stage->rd);
+		rob_entry.setslot_status(ALLOCATED);
+
+		cpu->rob->add_instruction_to_ROB(rob_entry);
 
 //		->iq.addToIssueQueue()
 		cpu->stage[EX] = cpu->stage[DRF];

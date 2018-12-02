@@ -9,6 +9,8 @@
 #include <stdlib.h>
 
 #include "cpu.h"
+#include "IQ.h"
+#include "ROB.h"
 
 int
 main(int argc, char const* argv[])
@@ -23,6 +25,7 @@ main(int argc, char const* argv[])
     fprintf(stderr, "APEX_Error : Unable to initialize CPU\n");
     exit(1);
   }
+
 
   APEX_cpu_run(cpu);
   APEX_cpu_stop(cpu);

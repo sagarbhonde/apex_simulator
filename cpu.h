@@ -2,6 +2,7 @@
 #define _APEX_CPU_H_
 #include "IQ.h"
 #include "IQEntry.h"
+#include "ROB.h"
 /**
  *  cpu.h
  *  Contains various CPU and Pipeline Data structures
@@ -72,6 +73,9 @@ typedef struct APEX_CPU {
 
 	/* Issue Queue */
 	IQ* iq;
+
+	/* ROB */
+	ROB* rob;
 
 } APEX_CPU;
 

@@ -87,13 +87,13 @@ void ROB::print_slot_contents(int index) {
     }
 }
 
-ostream& operator<<(ostream& out, const ROB& rob)
+ostream& operator<<(ostream& out, const ROB* rob)
 {
     out<<" ** ROB Circular Buffer Data ** "<<endl;
     for(int i = 0; i < ROB_SIZE; ++i)
     {
         cout<<"Slot No: "<<i<<endl;
-        cout<<rob.rob_queue[i]<<endl;
+        cout<<rob->rob_queue[i]<<endl;
     }
     return out;
 }
