@@ -34,6 +34,9 @@ APEX_cpu_init(const char* filename) {
 	/* Initialize ROB */
 	cpu->rob = new ROB();
 
+	/*Initialize URF */
+	cpu->urf = new URF();
+
 	/* Initialize PC, Registers and all pipeline stages */
 	cpu->pc = 4000;
 	memset(cpu->regs, 0, sizeof(int) * 32);
@@ -98,6 +101,9 @@ void APEX_cpu_stop(APEX_CPU* cpu) {
 	printf("=============== STATE OF ROB ==========\n\n");
 	cout<<cpu->rob<<endl;
 
+	printf("=============== URF ==========\n\n");
+	cout<<cpu->urf<<endl;
+
 
 	/*printf("\n\n============== STATE OF DATA MEMORY =============\n\n");
 	 for (int i = 0; i < 100; i++) {
@@ -107,6 +113,7 @@ void APEX_cpu_stop(APEX_CPU* cpu) {
 	free(cpu->code_memory);
 
 	// delete IQ and ROB
+	delete cpu->urf;
 	delete cpu->iq;
 	delete cpu->rob;
 

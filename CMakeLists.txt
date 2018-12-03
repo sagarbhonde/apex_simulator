@@ -20,4 +20,6 @@ add_executable(apex_simulator
         ROB.h
         rob_entry.cpp
         rob_entry.h
+        URF.h
+        URF.cpp
         Makefile)
