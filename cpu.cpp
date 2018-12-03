@@ -265,14 +265,10 @@ int decode(APEX_CPU* cpu) {
 		// @todo: More fields needs to be set.
 		//
 		Rob_entry rob_entry;
-		rob_entry.setStatus(VALID);
 		rob_entry.setPc_value(stage->pc);
-		rob_entry.setArchiteture_register(stage->rd);
-		rob_entry.setslot_status(ALLOCATED);
 
 		cpu->rob->add_instruction_to_ROB(rob_entry);
 
-//		->iq.addToIssueQueue()
 		cpu->stage[EX] = cpu->stage[DRF];
 
 		if (ENABLE_DEBUG_MESSAGES) {

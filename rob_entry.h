@@ -10,12 +10,14 @@
 
 class Rob_entry{
     int m_status;         // indicates whether result is VALID or not
+    int m_slot_id;        // slo_id
     int m_pc_value;       // pc value of instruction in code memory
     int m_excodes;        // conatins exception codes/ flags
     int m_CFID;           // Used for Conditinal isntructions
     int m_result;         // Computed result
     void* m_pv_saved_info;// pointer to structure having info about 'rename table' and 'URF'
     int m_architeture_register; // architectural register number [0-16]
+    int m_unified_register;
     int m_unifier_register_value; // URF value
     int m_slot_status;    // Status whether slot is unallocated / executing / wating
 public:
@@ -25,17 +27,17 @@ public:
     virtual ~Rob_entry();
 
     //@ note the sequence.
-    Rob_entry(int status = 0, int pc_value = 0, int architeture_register = 0, int unifier_register_value = 0,
-              int excodes = 0,int result = 0, int slot_status = UNALLOCATED, int CFID = -1, void* pv_saved_info = 0){
-        m_status = status;
-        m_pc_value = m_pc_value;
-        m_architeture_register = m_architeture_register;
-        m_unifier_register_value = unifier_register_value;
-        m_excodes = excodes;
-        m_result = result;
-        m_slot_status = slot_status;
-        m_CFID = CFID;
-        m_pv_saved_info = pv_saved_info; // nullptr
+    Rob_entry(){
+        m_status = GARBAGE;
+        m_slot_id = GARBAGE;
+        m_pc_value = GARBAGE;
+        m_architeture_register = GARBAGE;
+        m_unifier_register_value = GARBAGE;
+        m_excodes = GARBAGE;
+        m_result = GARBAGE;
+        m_slot_status = UNALLOCATED;
+        m_CFID = GARBAGE;
+        m_pv_saved_info = 0; // nullptr
     }
 
     int getStatus() const;
@@ -77,6 +79,14 @@ public:
     Rob_entry& operator=(const Rob_entry& entry);
 
     friend ostream& operator<<(ostream &out, const Rob_entry& entry);
+
+    int get_slot_id() const;
+
+    void set_slot_id(int slot_id);
+
+    int getM_unifier_register() const;
+
+    void setM_unifier_register(int m_unified_register);
 
 };
 

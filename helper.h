@@ -12,6 +12,7 @@
 using namespace std;
 
 #define ROB_SIZE    36
+#define GARBAGE 2147483647
 
 
 enum Intruction_type
@@ -27,7 +28,7 @@ enum Intruction_type
 enum SLOT_STATUS
 {
     //todo:need to discuss. dummy now
-    EXEUTING,
+    EXECUTING,
     WAITING_FOR_INPUT,
     COMPLETED,
     UNALLOCATED,

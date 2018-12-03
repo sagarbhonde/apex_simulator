@@ -18,7 +18,15 @@ bool ROB::add_instruction_to_ROB(Rob_entry entry) {
         tail = (tail+1)%size;   // tail++
     }
 
-    rob_queue[tail] = entry;
+    // entry is added if and only if slot is UNALLOCATED
+
+    if(entry.getslot_status() == UNALLOCATED) {
+
+        entry.set_slot_id((tail)); // Assigning Slot ID here and then pushing in queue.
+        rob_queue[tail] = entry;    // Adding to queue
+        rob_queue[tail].setslot_status(ALLOCATED);  // Mark slot status as 'ALLOCATED'
+
+    }
     return true;
 }
 
@@ -29,23 +37,17 @@ bool ROB::retire_instruction_from_ROB() {
     }
     else
     {
+        // When retiring, Mark slot status as 'UNALLOCATED'.
+        rob_queue[head].setslot_status(UNALLOCATED);
+
         if(head == tail)    // Last element
         {
-            // Either memset or mark status bit as unallocated.
-            //memset(&rob_queue[head], 0, sizeof(Rob_entry)); //@note: might cause memory issue
-            rob_queue[head].setslot_status(UNALLOCATED);
-
             head = tail = -1;
 
         }
         else
         {
-            // Either memset or mark status bit as unallocated.
-            //memset(&rob_queue[head], 0, sizeof(Rob_entry)); // @note: might cause memory issue
-            rob_queue[head].setslot_status(UNALLOCATED);
-
             head = (head+1)%size;       // head++
-
         }
     }
     return true;
@@ -96,4 +98,43 @@ ostream& operator<<(ostream& out, const ROB* rob)
         cout<<rob->rob_queue[i]<<endl;
     }
     return out;
+}
+
+bool ROB::update_ROB_slot(int slot_id, int unified_reg, int unified_reg_val, int flag) {
+
+    // get the entry at given slot index.
+    Rob_entry entry = rob_queue[slot_id];
+
+    if(entry.getslot_status() != UNALLOCATED)
+    {
+        // Check if UR is same.
+        if(entry.getM_unifier_register() == unified_reg) {
+            entry.setUnifier_register_value(unified_reg_val); // Updating URF val
+            entry.setExcodes(flag);
+
+            // marking result as valid.
+            entry.setStatus(VALID);
+
+            //@discuss: Since URF value is ready, Marking slot's status as COMPLETED.
+            // other status WAITING, EXECUTING will be marked by respective stages.
+            entry.setslot_status(COMPLETED);
+        }
+    }
+    else
+    {
+        return false;
+    }
+
+return true;
+}
+
+bool ROB::flush_ROB_entries() {
+    // Flushing ROB means, just setting status as unallocated for all instructions from head to tail as 'UNALLOCATED'.
+    for(int next = head+1; next != tail; next++)
+        rob_queue[next].setslot_status(UNALLOCATED);
+
+    // update tail. So, when new instruction is added, new 'slot_id' will be assigned to it.
+    tail = head;
+
+    return false;
 }
