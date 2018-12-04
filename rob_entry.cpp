@@ -89,6 +89,7 @@ Rob_entry &Rob_entry::operator=(const Rob_entry &entry) {
     }
     else
     {
+        m_slot_id = entry.m_slot_id;
         m_status = entry.m_status;
         m_pc_value = entry.m_pc_value;
         m_architeture_register = entry.m_architeture_register;
@@ -107,6 +108,7 @@ ostream& operator<<(ostream &out, const Rob_entry& entry)
 {
     // Using this for logging purpose
     out<<"================================================"<<endl;
+    out<<"slot_id: "<<entry.get_slot_id()<<endl;
     out<<"status: "<<entry.getStatus()<<endl;
     out<<"pc_value: "<<entry.getPc_value()<<endl;
     out<<"architecture register: "<<entry.getArchiteture_register()<<endl;
@@ -118,5 +120,21 @@ ostream& operator<<(ostream &out, const Rob_entry& entry)
     out<<"================================================"<<endl;
 
     return out;
+}
+
+int Rob_entry::get_slot_id() const {
+    return m_slot_id;
+}
+
+void Rob_entry::set_slot_id(int slot_id) {
+    Rob_entry::m_slot_id = slot_id;
+}
+
+int Rob_entry::getM_unifier_register() const {
+    return m_unified_register;
+}
+
+void Rob_entry::setM_unifier_register(int m_unified_register) {
+    Rob_entry::m_unified_register = m_unified_register;
 }
 

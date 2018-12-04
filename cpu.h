@@ -3,6 +3,8 @@
 #include "IQ.h"
 #include "IQEntry.h"
 #include "ROB.h"
+#include "URF.h"
+
 /**
  *  cpu.h
  *  Contains various CPU and Pipeline Data structures
@@ -79,6 +81,9 @@ typedef struct APEX_CPU {
 
 	/* ROB */
 	ROB* rob;
+
+	/* URF */
+	URF* urf;
 
 } APEX_CPU;
 
