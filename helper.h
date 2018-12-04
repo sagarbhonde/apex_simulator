@@ -9,7 +9,10 @@
 #include <iostream>
 #include <string.h>
 #include <iomanip>
+#include <cstdlib>
 using namespace std;
+
+#define GARBAGE 2147483647
 
 #define ROB_SIZE    36
 

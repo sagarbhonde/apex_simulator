@@ -1,0 +1,5 @@
+unusedcode.txt
+.cproject
+.project
+.settings/
+*.o

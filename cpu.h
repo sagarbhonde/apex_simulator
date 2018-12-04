@@ -13,7 +13,7 @@
  */
 
 enum {
-	F, DRF, EX, MEM, WB, NUM_STAGES
+	F, DRF, INT_EX, MUL_EX, MEM_EX, WB, NUM_STAGES
 };
 
 enum {
@@ -58,6 +58,9 @@ typedef struct APEX_CPU {
 	int regs[16];
 	int regs_valid[16];
 
+	int urf[40];
+	int urf_valid[40];
+
 	/* Array of 5 CPU_stage */
 	CPU_Stage stage[5];
 
@@ -98,10 +101,10 @@ int
 decode(APEX_CPU* cpu);
 
 int
-execute(APEX_CPU* cpu);
+intFU(APEX_CPU* cpu);
 
 int
-memory(APEX_CPU* cpu);
+memFU(APEX_CPU* cpu);
 
 int
 writeback(APEX_CPU* cpu);

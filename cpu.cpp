@@ -84,11 +84,11 @@ void APEX_cpu_stop(APEX_CPU* cpu) {
 	printf(
 			"=============== STATE OF ARCHITECTURAL REGISTER FILE ==========\n\n");
 	/*for (int i = 0; i < 16; i++) {
-		char* status;
-		status = cpu->regs_valid[i] == 1 ? "INVALID" : "VALID";
-		printf("|\tREG[%d]\t|\tValue = %d\t|\tStatus=%s\t|\n", i, cpu->regs[i],
-				status);
-	}*/
+	 char* status;
+	 status = cpu->regs_valid[i] == 1 ? "INVALID" : "VALID";
+	 printf("|\tREG[%d]\t|\tValue = %d\t|\tStatus=%s\t|\n", i, cpu->regs[i],
+	 status);
+	 }*/
 
 	printf("=============== STATE OF ISSUE QUEUE ==========\n\n");
 	for (int i = 0; i < IQ_SIZE; i++) {
@@ -96,8 +96,7 @@ void APEX_cpu_stop(APEX_CPU* cpu) {
 	}
 
 	printf("=============== STATE OF ROB ==========\n\n");
-	cout<<cpu->rob<<endl;
-
+	cout << cpu->rob << endl;
 
 	/*printf("\n\n============== STATE OF DATA MEMORY =============\n\n");
 	 for (int i = 0; i < 100; i++) {
@@ -258,7 +257,7 @@ int decode(APEX_CPU* cpu) {
 				stage->imm, stage->pc, stage->fuType, stage->opcode);
 		if (cpu->iq->addToIssueQueue(entry) == 1) {
 			//Entry is added to IQ, go ahead.
-			cout << "entry added" << endl;
+			cout << "entry added to IQ" << endl;
 		}
 
 		//======== Add to ROB ================================
@@ -288,108 +287,116 @@ int decode(APEX_CPU* cpu) {
  *  Note : You are free to edit this function according to your
  * 				 implementation
  */
-int execute(APEX_CPU* cpu) {
-	CPU_Stage* stage = &cpu->stage[EX];
+int intFU(APEX_CPU* cpu) {
+	CPU_Stage* stage = &cpu->stage[INT_EX];
 	if (!stage->busy && !stage->stalled) {
 
-		/* Store */
-		if (strcmp(stage->opcode, "STORE") == 0) {
-		}
-
-		/* MOVC */
 		if (strcmp(stage->opcode, "MOVC") == 0) {
 		}
 
-		/* Copy data from Execute latch to Memory latch*/
-		cpu->stage[MEM] = cpu->stage[EX];
+	if (strcmp(stage->opcode, "ADD") == 0
+			|| strcmp(stage->opcode, "SUB") == 0
+			|| strcmp(stage->opcode, "AND") == 0
+			|| strcmp(stage->opcode, "OR") == 0
+			|| strcmp(stage->opcode, "EX-OR") == 0){
 
-		if (ENABLE_DEBUG_MESSAGES) {
-			print_stage_content("Execute", stage);
-		}
-	}
-	return 0;
-}
-
-/*
- *  Memory Stage of APEX Pipeline
- *
- *  Note : You are free to edit this function according to your
- * 				 implementation
- */
-int memory(APEX_CPU* cpu) {
-	CPU_Stage* stage = &cpu->stage[MEM];
-	if (!stage->busy && !stage->stalled) {
-
-		/* Store */
-		if (strcmp(stage->opcode, "STORE") == 0) {
-		}
-
-		/* MOVC */
-		if (strcmp(stage->opcode, "MOVC") == 0) {
-		}
-
-		/* Copy data from decode latch to execute latch*/
-		cpu->stage[WB] = cpu->stage[MEM];
-
-		if (ENABLE_DEBUG_MESSAGES) {
-			print_stage_content("Memory", stage);
-		}
-	}
-	return 0;
-}
-
-/*
- *  Writeback Stage of APEX Pipeline
- *
- *  Note : You are free to edit this function according to your
- * 				 implementation
- */
-int writeback(APEX_CPU* cpu) {
-	CPU_Stage* stage = &cpu->stage[WB];
-	if (!stage->busy && !stage->stalled) {
-
-		/* Update register file */
-		if (strcmp(stage->opcode, "MOVC") == 0) {
-			cpu->regs[stage->rd] = stage->buffer;
-		}
-
-		cpu->ins_completed++;
-
-		if (ENABLE_DEBUG_MESSAGES) {
-			print_stage_content("Writeback", stage);
-		}
-	}
-	return 0;
-}
-
-/*
- *  APEX CPU simulation loop
- *
- *  Note : You are free to edit this function according to your
- * 				 implementation
- */
-int APEX_cpu_run(APEX_CPU* cpu) {
-	while (1) {
-
-		/* All the instructions committed, so exit */
-		if (cpu->ins_completed == cpu->code_memory_size) {
-			printf("(apex) >> Simulation Complete");
-			break;
-		}
-
-		if (ENABLE_DEBUG_MESSAGES) {
-			printf("--------------------------------\n");
-			printf("Clock Cycle #: %d\n", cpu->clock);
-			printf("--------------------------------\n");
-		}
-
-		writeback(cpu);
-		memory(cpu);
-		execute(cpu);
-		decode(cpu);
-		fetch(cpu);
-		cpu->clock++;
 	}
 
-	return 0;
-}
+			/* Copy data from Execute latch to Memory latch*/
+			cpu->stage[WB] = cpu->stage[INT_EX];
+
+			if (ENABLE_DEBUG_MESSAGES) {
+				print_stage_content("Execute", stage);
+			}
+		}
+		return 0;
+	}
+
+	int mulFU(APEX_CPU* cpu) {
+		CPU_Stage* stage = &cpu->stage[EX];
+		if (!stage->busy && !stage->stalled) {
+
+			/* Update the result to ROB entry */
+
+			if (ENABLE_DEBUG_MESSAGES) {
+				print_stage_content("Execute", stage);
+			}
+		}
+		return 0;
+	}
+
+	/*
+	 *  Memory Stage of APEX Pipeline
+	 *
+	 *  Note : You are free to edit this function according to your
+	 * 				 implementation
+	 */
+	int memFU(APEX_CPU* cpu) {
+		CPU_Stage* stage = &cpu->stage[MEM_EX];
+		if (!stage->busy && !stage->stalled) {
+
+			/* Copy data from decode latch to execute latch*/
+			cpu->stage[WB] = cpu->stage[MEM_EX];
+
+			if (ENABLE_DEBUG_MESSAGES) {
+				print_stage_content("Memory", stage);
+			}
+		}
+		return 0;
+	}
+
+	/*
+	 *  Writeback Stage of APEX Pipeline
+	 *
+	 *  Note : You are free to edit this function according to your
+	 * 				 implementation
+	 */
+	int writeback(APEX_CPU* cpu) {
+		CPU_Stage* stage = &cpu->stage[WB];
+		if (!stage->busy && !stage->stalled) {
+
+			/* Update register file */
+			if (strcmp(stage->opcode, "MOVC") == 0) {
+				cpu->regs[stage->rd] = stage->buffer;
+			}
+
+			cpu->ins_completed++;
+
+			if (ENABLE_DEBUG_MESSAGES) {
+				print_stage_content("Writeback", stage);
+			}
+		}
+		return 0;
+	}
+
+	/*
+	 *  APEX CPU simulation loop
+	 *
+	 *  Note : You are free to edit this function according to your
+	 * 				 implementation
+	 */
+	int APEX_cpu_run(APEX_CPU* cpu) {
+		while (1) {
+
+			/* All the instructions committed, so exit */
+			if (cpu->ins_completed == cpu->code_memory_size) {
+				printf("(apex) >> Simulation Complete");
+				break;
+			}
+
+			if (ENABLE_DEBUG_MESSAGES) {
+				printf("--------------------------------\n");
+				printf("Clock Cycle #: %d\n", cpu->clock);
+				printf("--------------------------------\n");
+			}
+
+			writeback(cpu);
+			memFU(cpu);
+			intFU(cpu);
+			decode(cpu);
+			fetch(cpu);
+			cpu->clock++;
+		}
+
+		return 0;
+	}
