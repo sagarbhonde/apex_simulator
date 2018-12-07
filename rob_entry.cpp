@@ -25,10 +25,6 @@ int Rob_entry::getResult() const {
     return m_result;
 }
 
-int Rob_entry::getUnifier_register_value() const {
-    return m_unifier_register_value;
-}
-
 int Rob_entry::getExcodes() const {
     return m_excodes;
 }
@@ -61,10 +57,6 @@ void Rob_entry::setExcodes(int excodes) {
     Rob_entry::m_excodes = excodes;
 }
 
-void Rob_entry::setUnifier_register_value(int unifier_register_value) {
-    Rob_entry::m_unifier_register_value = unifier_register_value;
-}
-
 void Rob_entry::setResult(int result) {
     Rob_entry::m_result = result;
 }
@@ -93,7 +85,6 @@ Rob_entry &Rob_entry::operator=(const Rob_entry &entry) {
         m_status = entry.m_status;
         m_pc_value = entry.m_pc_value;
         m_architeture_register = entry.m_architeture_register;
-        m_unifier_register_value = entry.m_unifier_register_value;
         m_excodes = entry.m_excodes;
         m_result = entry.m_result;
         m_slot_status = entry.m_slot_status;
@@ -112,7 +103,6 @@ ostream& operator<<(ostream &out, const Rob_entry& entry)
     out<<"status: "<<entry.getStatus()<<endl;
     out<<"pc_value: "<<entry.getPc_value()<<endl;
     out<<"architecture register: "<<entry.getArchiteture_register()<<endl;
-    out<<"unified_register_value: "<<entry.getUnifier_register_value()<<endl;
     out<<"excodes: "<<entry.getExcodes()<<endl;
     out<<"result: "<<entry.getResult()<<endl;
     out<<"slot_status: "<<entry.getslot_status()<<endl;

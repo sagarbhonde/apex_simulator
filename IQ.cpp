@@ -49,6 +49,14 @@ int IQ::removeEntry(IQEntry * entry) {
 	return result;
 }
 
+void IQ:: printIssueQueue(){
+	for(int i=0; i< IQ_SIZE; i++) {
+		if(issueQueue[i].allocated == 1) {
+			issueQueue[i].printIQEntryOP();
+		}
+	}
+}
+
 /*
  *  mark entry's allocated bit 1
  *  if result == 1 then entry is added else it is not

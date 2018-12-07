@@ -21,6 +21,7 @@ public:
 	IQEntry getNextInstructionToIssue();
 	int addToIssueQueue(IQEntry *iqEntry);
 	int removeEntry(IQEntry * entry);
+	void printIssueQueue();
 };
 
 

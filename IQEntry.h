@@ -23,8 +23,9 @@ public:
 	int src2Valid; //src2Valid = 1 (value of src2 is valid) else not
 	int src1Value;
 	int src2Value;
-	int src1;      //src1 address
-	int src2;      //src2 address
+	int src1;      //renamed src1 address
+	int src2;      //renamed src2 address
+	int rd;        //renamed rd address
 	int lsqIndex;
 	int literal;
 	char *opcode;
@@ -39,9 +40,12 @@ public:
 			char* opcode);
 	void printIQEntry();
 
+	void printIQEntryOP();
+
 	IQEntry* operator =(IQEntry *b) {
 		this->allocated = b->allocated;
 		this->pc = b->pc;
+		this->rd = b->rd;
 		this->fuType = b->fuType;
 		this->src1Valid = b->src1Valid;
 		this->src2Valid = b->src2Valid;

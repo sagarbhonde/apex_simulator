@@ -4,6 +4,8 @@
 //
 
 #include "ROB.h"
+#include "helper.h"
+using namespace std;
 
 bool ROB::add_instruction_to_ROB(Rob_entry entry) {
     if(isFull()) {
@@ -39,6 +41,7 @@ bool ROB::retire_instruction_from_ROB() {
     {
         // When retiring, Mark slot status as 'UNALLOCATED'.
         rob_queue[head].setslot_status(UNALLOCATED);
+
 
         if(head == tail)    // Last element
         {
@@ -100,6 +103,7 @@ ostream& operator<<(ostream& out, const ROB* rob)
     return out;
 }
 
+//@TODO: Replace with parameters (int pc_value, int unified_reg, int flag, int status)
 bool ROB::update_ROB_slot(int slot_id, int unified_reg, int unified_reg_val, int flag) {
 
     // get the entry at given slot index.
@@ -109,7 +113,7 @@ bool ROB::update_ROB_slot(int slot_id, int unified_reg, int unified_reg_val, int
     {
         // Check if UR is same.
         if(entry.getM_unifier_register() == unified_reg) {
-            entry.setUnifier_register_value(unified_reg_val); // Updating URF val
+//            entry.setUnifier_register_value(unified_reg_val); // Updating URF val
             entry.setExcodes(flag);
 
             // marking result as valid.

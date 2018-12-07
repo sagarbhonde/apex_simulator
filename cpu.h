@@ -1,9 +1,11 @@
 #ifndef _APEX_CPU_H_
 #define _APEX_CPU_H_
 #include "IQ.h"
-#include "IQEntry.h"
 #include "ROB.h"
+#include "rob_entry.h"
+#include "IQEntry.h"
 #include "URF.h"
+#include "helper.h"
 
 /**
  *  cpu.h
@@ -15,7 +17,7 @@
  */
 
 enum {
-	F, DRF, INT_EX, MUL_EX, MEM_EX, WB, NUM_STAGES
+	F, DRF, QUEUE, INT_EX, MUL_EX, MEM_EX, WB, NUM_STAGES
 };
 
 enum {
@@ -36,8 +38,11 @@ typedef struct CPU_Stage {
 	int pc;		    // Program Counter
 	char opcode[128];	// Operation Code
 	int rs1;		    // Source-1 Register Address
+	int u_rs1;
 	int rs2;		    // Source-2 Register Address
+	int u_rs2;
 	int rd;		    // Destination Register Address
+	int u_rd;
 	int imm;		    // Literal Value
 	int rs1_value;	// Source-1 Register Value
 	int rs2_value;	// Source-2 Register Value
@@ -56,13 +61,6 @@ typedef struct APEX_CPU {
 	/* Current program counter */
 	int pc;
 
-	/* Integer register file */
-	int regs[16];
-	int regs_valid[16];
-
-	int urf[40];
-	int urf_valid[40];
-
 	/* Array of 5 CPU_stage */
 	CPU_Stage stage[5];
 
@@ -80,7 +78,7 @@ typedef struct APEX_CPU {
 	IQ* iq;
 
 	/* ROB */
-	ROB* rob;
+	ROB * rob;
 
 	/* URF */
 	URF* urf;
@@ -104,6 +102,8 @@ fetch(APEX_CPU* cpu);
 
 int
 decode(APEX_CPU* cpu);
+
+int addToQueues(APEX_CPU* cpu);
 
 int
 intFU(APEX_CPU* cpu);

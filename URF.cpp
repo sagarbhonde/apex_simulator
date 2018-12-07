@@ -4,26 +4,25 @@
 //
 
 #include "URF.h"
+using namespace std;
 
-URF::URF()
-{
+URF::URF() {
 
-    memset(&F_RAT, GARBAGE, sizeof(F_RAT));
-    memset(&B_RAT, GARBAGE, sizeof(F_RAT));
-    memset(&URF_Table, GARBAGE, sizeof(URF_Table));
+	memset(&F_RAT, 0, sizeof(F_RAT));
+	memset(&URF_TABLE_valid, 0, sizeof(URF_TABLE_valid));
+	memset(&B_RAT, 0, sizeof(B_RAT));
+	memset(&URF_Table, GARBAGE, sizeof(URF_Table));
 
-    // Initializing free list here.
-    // 17 to 39.
-    for(int start = 17; start<40; start++)
-    {
-        free_register_list.push(start);
-    }
+	for (int i = 0; i < ARCHITECTURAL_REG_SIZE; i++) {
+		F_RAT[i] = i;
+//		B_RAT[i] = i;
+	}
 
-    // till 39& then 0 to 16.
-    for(int start = 0; start<17; start++)
-    {
-        free_register_list.push(start);
-    }
+	// Initializing free list here.
+	// 0 to 39.
+	for (int start = 0; start < 40; start++) {
+		free_register_list.push(start);
+	}
 }
 
 URF::~URF() {
@@ -32,75 +31,92 @@ URF::~URF() {
 
 bool URF::add_to_free_list(int reg) {
 
-    free_register_list.push((reg));
+	free_register_list.push((reg));
 
-    return true;
+	return true;
 }
 
 int URF::get_next_free_register() {
 
-    int reg = -1;
+	int reg = -1;
 
-    if(!free_register_list.empty())
-    {
-        reg = free_register_list.front();
-        free_register_list.pop();
-    }
+	if (!free_register_list.empty()) {
+		reg = free_register_list.front();
+		free_register_list.pop();
+	}
 
-    return reg;
+	return reg;
 }
 
 URF &URF::operator=(const URF &urf) {
-    if(this == &urf)
-    {
-        return *this;
-    }
-    else
-    {
-        copy(urf.B_RAT, urf.B_RAT + ARCHITECTURAL_REG_SIZE,  B_RAT);
-        copy(urf.F_RAT, urf.F_RAT + ARCHITECTURAL_REG_SIZE,  F_RAT);
-        copy(urf.URF_Table, urf.URF_Table + URF_SIZE,  URF_Table);
-        free_register_list = urf.free_register_list;
-    }
-    return *this;
+	if (this == &urf) {
+		return *this;
+	} else {
+		copy(urf.B_RAT, urf.B_RAT + ARCHITECTURAL_REG_SIZE, B_RAT);
+		copy(urf.F_RAT, urf.F_RAT + ARCHITECTURAL_REG_SIZE, F_RAT);
+		copy(urf.URF_Table, urf.URF_Table + URF_SIZE, URF_Table);
+		free_register_list = urf.free_register_list;
+	}
+	return *this;
 }
 
-ostream& operator<<(ostream& out, const URF* urf)
-{
-    out<<"====================================================================="<<endl;
+void URF::print_f_rat() {
+//	RAT[00] --> U0
+	for (int i = 0; i < ARCHITECTURAL_REG_SIZE; i++) {
+		cout << "RAT[" << i << "] --> U[" << F_RAT[i] << "]" << endl;
+	}
+}
 
-    out<<"     FRONT End Rename Table:   "<<endl;
-    for(int i = 0 ;i<ARCHITECTURAL_REG_SIZE;i++)
-    {
-        out<<" | "<<i<<"  |  "<<urf->F_RAT[i]<<" |"<<endl;
-    }
-    out<<endl;
+void URF::print_r_rat() {
 
-    out<<"     BACK End Rename Table:   "<<endl;
-    for(int i = 0 ;i<ARCHITECTURAL_REG_SIZE;i++)
-    {
-        out<<" | "<<i<<"  |  "<<urf->B_RAT[i]<<" |"<<endl;
-    }
-    out<<endl;
+	for (int i = 0; i < ARCHITECTURAL_REG_SIZE; i++) {
+		if (B_RAT[i] != 0)
+			cout << "R-RAT[" << i << "] --> U[" << B_RAT[i] << "]" << endl;
+	}
+}
 
-    out<<"     UNIFIED REGISTER FILE   "<<endl;
-    for(int i = 0 ;i<URF_SIZE;i++)
-    {
-        out<<" | "<<i<<"  |  "<<urf->URF_Table[i]<<" |"<<endl;
-    }
+void URF::print_urf() {
+	for (int i = 0; i < URF_SIZE; i++) {
+		cout << " |U " << i << "  | -> " << URF_Table[i] << " |" << endl;
+	}
+}
 
-    out<<"====================================================================="<<endl;
+ostream& operator<<(ostream& out, const URF* urf) {
+	out
+			<< "====================================================================="
+			<< endl;
 
-    return out;
+	out << "     FRONT End Rename Table:   " << endl;
+	for (int i = 0; i < ARCHITECTURAL_REG_SIZE; i++) {
+		out << " | " << i << "  |  " << urf->F_RAT[i] << " |" << endl;
+	}
+	out << endl;
+
+	out << "     BACK End Rename Table:   " << endl;
+	for (int i = 0; i < ARCHITECTURAL_REG_SIZE; i++) {
+		out << " | " << i << "  |  " << urf->B_RAT[i] << " |" << endl;
+	}
+	out << endl;
+
+	out << "     UNIFIED REGISTER FILE   " << endl;
+	for (int i = 0; i < URF_SIZE; i++) {
+		out << " | " << i << "  |  " << urf->URF_Table[i] << " |" << endl;
+	}
+
+	out
+			<< "====================================================================="
+			<< endl;
+
+	return out;
 }
 
 URF URF::takeSnapshot() {
-    URF urf_snap;
+	URF urf_snap;
 
-    copy(F_RAT, F_RAT + ARCHITECTURAL_REG_SIZE, urf_snap.F_RAT);
-    copy(B_RAT, B_RAT + ARCHITECTURAL_REG_SIZE, urf_snap.B_RAT);
-    copy(URF_Table, URF_Table + URF_SIZE, urf_snap.URF_Table);
-    urf_snap.free_register_list = free_register_list;
+	copy(F_RAT, F_RAT + ARCHITECTURAL_REG_SIZE, urf_snap.F_RAT);
+	copy(B_RAT, B_RAT + ARCHITECTURAL_REG_SIZE, urf_snap.B_RAT);
+	copy(URF_Table, URF_Table + URF_SIZE, urf_snap.URF_Table);
+	urf_snap.free_register_list = free_register_list;
 
-    return urf_snap;
+	return urf_snap;
 }

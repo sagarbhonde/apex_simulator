@@ -7,7 +7,7 @@
 #define CIRCULAR_QUEUE_ROB_H
 
 #include "rob_entry.h"
-
+#include "helper.h"
 class ROB
 {
 public:

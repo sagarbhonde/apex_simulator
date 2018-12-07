@@ -16,6 +16,8 @@ using namespace std;
 
 #define ROB_SIZE    36
 #define GARBAGE 2147483647
+#define ARCHITECTURAL_REG_SIZE  16
+#define URF_SIZE  40
 
 
 enum Intruction_type

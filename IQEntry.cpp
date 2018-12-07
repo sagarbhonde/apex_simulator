@@ -6,6 +6,7 @@
  */
 
 #include "IQEntry.h"
+#include "helper.h"
 using namespace std;
 
 IQEntry::IQEntry(int rd, int rs1, int rs2, int imm, int pc, int fuType,
@@ -23,12 +24,27 @@ IQEntry::IQEntry(int rd, int rs1, int rs2, int imm, int pc, int fuType,
 	this->src1Value = GARBAGE;
 	this->src2Value = GARBAGE;
 	this->status = 0;
+	this->rd = rd;
 }
 
 int IQEntry::getStatus() const {
 	if (allocated == 1)
 		return src1Valid == 1 && src2Valid == 1 ? 1 : 0;
 	return 0;
+}
+
+void IQEntry::printIQEntryOP() {
+	if (strcmp(this->opcode, "ADD") == 0 || strcmp(this->opcode, "SUB") == 0
+			|| strcmp(this->opcode, "AND") == 0
+			|| strcmp(this->opcode, "OR") == 0
+			|| strcmp(this->opcode, "EX-OR") == 0) {
+		cout << this->opcode << ",U" << this->rd << ",U" << this->src1 << ",U"
+				<< this->src2 << endl;
+	}
+	if (strcmp(this->opcode, "MOVC") == 0) {
+		cout << this->opcode << ",U" << this->rd << ",#" << this->literal
+				<< endl;
+	}
 }
 
 void IQEntry::printIQEntry() {
