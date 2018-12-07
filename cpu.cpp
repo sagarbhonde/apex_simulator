@@ -8,9 +8,13 @@
 
 #include "cpu.h"
 #include "helper.h"
+#include "ROB.h"
+#include<map>
+using namespace std;
 
 /* Set this flag to 1 to enable debug messages */
 #define ENABLE_DEBUG_MESSAGES 1
+int iMulCycleSpent = 0;
 
 /*
  * This function creates and initializes APEX cpu.
@@ -28,6 +32,8 @@ APEX_cpu_init(const char* filename) {
 	if (!cpu) {
 		return NULL;
 	}
+
+	cpu->imap = new map<int,APEX_Instruction*>();
 
 	/* Initialize IssueQueue */
 	cpu->iq = new IQ();
@@ -100,11 +106,12 @@ void APEX_cpu_stop(APEX_CPU* cpu) {
 
 	printf("=============== STATE OF ROB ==========\n\n");
 
-	cout << cpu->rob << endl;
+	cpu->rob->print_rob();
 
 	//TODO this function is not working print_urf()
 	printf("=============== URF ==========\n\n");
-	cpu->urf->print_urf();
+
+	cout<<cpu->urf;//->print_urf();
 
 	/*printf("\n\n============== STATE OF DATA MEMORY =============\n\n");
 	 for (int i = 0; i < 100; i++) {
@@ -117,6 +124,7 @@ void APEX_cpu_stop(APEX_CPU* cpu) {
 	delete cpu->urf;
 	delete cpu->iq;
 	delete cpu->rob;
+	delete cpu->imap;
 
 	free(cpu);
 	printf("ALL CLEAR!!");
@@ -227,6 +235,7 @@ int fetch(APEX_CPU* cpu) {
 		stage->rs2 = current_ins->rs2;
 		stage->imm = current_ins->imm;
 
+		cpu->imap->insert(make_pair(cpu->pc, current_ins));
 		/* Update PC for next instruction */
 		if (!drf_stage->stalled) {
 			cpu->pc += 4;
@@ -383,12 +392,14 @@ int intFU(APEX_CPU* cpu) {
 			cpu->urf->URF_Table[stage->u_rd] = cpu->urf->URF_Table[stage->u_rs1]
 					+ cpu->urf->URF_Table[stage->u_rs2];
 			cpu->urf->URF_TABLE_valid[stage->u_rd] = 1;
-			//@TODO: Update ROB
+			cpu->rob->update_ROB_slot(stage->pc, stage->u_rd, stage->zeroFlag, VALID);
 		}
 
+
 		if (ENABLE_DEBUG_MESSAGES) {
+			// result is calculated so just memset this.
+			memset(stage, 0, sizeof(CPU_Stage));
 			print_stage_content("INT FU", stage);
-			//TODO Empty this stage if the result has been calculated.
 		}
 	}
 	return 0;
@@ -396,10 +407,25 @@ int intFU(APEX_CPU* cpu) {
 
 int mulFU(APEX_CPU* cpu) {
 	CPU_Stage* stage = &cpu->stage[MUL_EX];
+
+	// Mul instruction spends 2-cycles.
 	if (!stage->busy && !stage->stalled) {
 
+		if (strcmp(stage->opcode, "MUL") == 0) {
+			iMulCycleSpent++;
+
+			// Only proceed if its a 2nd cycle.
+			if (iMulCycleSpent == 2) {
+				cpu->urf->URF_Table[stage->u_rd] = cpu->urf->URF_Table[stage->u_rs1]
+												   * cpu->urf->URF_Table[stage->u_rs2];
+				cpu->urf->URF_TABLE_valid[stage->u_rd] = 1;
+				cpu->rob->update_ROB_slot(stage->pc, stage->u_rd, stage->zeroFlag, VALID);
+				iMulCycleSpent = 0; // reset
+			}
+		}
+
 		if (ENABLE_DEBUG_MESSAGES) {
-			print_stage_content("Execute", stage);
+			print_stage_content("MUL FU", stage);
 		}
 	}
 	return 0;
@@ -443,7 +469,17 @@ int retireInstruction(APEX_CPU* cpu) {
 			cpu->ins_completed++;
 
 			if (ENABLE_DEBUG_MESSAGES) {
-				//TODO Print Retired Instruction using print guidelines
+				CPU_Stage* stage;
+				int pc_value = headEntry->getPc_value();
+				APEX_Instruction *current_ins = cpu->imap->find(pc_value)->second;
+				strcpy(stage->opcode, current_ins->opcode);
+				stage->rd = current_ins->rd;
+				stage->rs1 = current_ins->rs1;
+				stage->rs2 = current_ins->rs2;
+				stage->imm = current_ins->imm;
+
+				print_stage_content("ROB Retired Instructions", stage);
+
 			}
 		}
 	}

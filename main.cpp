@@ -15,7 +15,7 @@
 int
 main(int argc, char const* argv[])
 {
-  if (argc != 2) {
+    if (argc != 2) {
     fprintf(stderr, "APEX_Help : Usage %s <input_file>\n", argv[0]);
     exit(1);
   }

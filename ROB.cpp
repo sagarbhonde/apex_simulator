@@ -27,6 +27,7 @@ bool ROB::add_instruction_to_ROB(Rob_entry entry) {
         entry.set_slot_id((tail)); // Assigning Slot ID here and then pushing in queue.
         rob_queue[tail] = entry;    // Adding to queue
         rob_queue[tail].setslot_status(ALLOCATED);  // Mark slot status as 'ALLOCATED'
+        pc_slot_map.insert(pair<int,int>(entry.getPc_value(), entry.get_slot_id())); // mapping pc -->slot id
 
     }
     return true;
@@ -41,7 +42,7 @@ bool ROB::retire_instruction_from_ROB() {
     {
         // When retiring, Mark slot status as 'UNALLOCATED'.
         rob_queue[head].setslot_status(UNALLOCATED);
-
+        pc_slot_map.erase(rob_queue[head].getPc_value()); // remove from map
 
         if(head == tail)    // Last element
         {
@@ -92,19 +93,33 @@ void ROB::print_slot_contents(int index) {
     }
 }
 
-ostream& operator<<(ostream& out, const ROB* rob)
+ostream& operator<<(std::ostream& out, const ROB& rob)
 {
     out<<" ** ROB Circular Buffer Data ** "<<endl;
     for(int i = 0; i < ROB_SIZE; ++i)
     {
-        cout<<"Slot No: "<<i<<endl;
-        cout<<rob->rob_queue[i]<<endl;
+        out<<"Slot No: "<<i<<endl;
+        out<<rob.rob_queue[i]<<endl;
     }
     return out;
 }
 
-//@TODO: Replace with parameters (int pc_value, int unified_reg, int flag, int status)
-bool ROB::update_ROB_slot(int slot_id, int unified_reg, int unified_reg_val, int flag) {
+void ROB::print_rob()
+{
+    cout<<" ** ROB Circular Buffer Data ** "<<endl;
+    for(int i = 0; i < ROB_SIZE; ++i)
+    {
+        cout<<"Slot No: "<<i<<endl;
+        cout<<rob_queue[i]<<endl;
+    }
+}
+
+bool ROB::update_ROB_slot(int pc_value, int unified_reg, int flag, int status) {
+
+    // find the respective slot and update it.
+    map<int,int>::iterator itr;
+    itr = pc_slot_map.find(pc_value);
+    int slot_id = itr->second;
 
     // get the entry at given slot index.
     Rob_entry entry = rob_queue[slot_id];
@@ -117,7 +132,7 @@ bool ROB::update_ROB_slot(int slot_id, int unified_reg, int unified_reg_val, int
             entry.setExcodes(flag);
 
             // marking result as valid.
-            entry.setStatus(VALID);
+            entry.setStatus(status);
 
             //@discuss: Since URF value is ready, Marking slot's status as COMPLETED.
             // other status WAITING, EXECUTING will be marked by respective stages.

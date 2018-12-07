@@ -6,6 +6,7 @@
 #include "IQEntry.h"
 #include "URF.h"
 #include "helper.h"
+#include <map>
 
 /**
  *  cpu.h
@@ -51,7 +52,11 @@ typedef struct CPU_Stage {
 	int busy;		    // Flag to indicate, stage is performing some action
 	int stalled;		// Flag to indicate, stage is stalled
 	int fuType;       // Function Unit Type ENUM value
+	int zeroFlag;
 } CPU_Stage;
+
+
+/*PC<-->Instruction Map*/
 
 /* Model of APEX CPU */
 typedef struct APEX_CPU {
@@ -82,6 +87,8 @@ typedef struct APEX_CPU {
 
 	/* URF */
 	URF* urf;
+
+	map<int,APEX_Instruction*> *imap;
 
 } APEX_CPU;
 
