@@ -18,10 +18,11 @@ public:
 	IQEntry issueQueue[IQ_SIZE];
 
 	IQ();
-	IQEntry getNextInstructionToIssue();
-	int addToIssueQueue(IQEntry *iqEntry);
+	IQEntry getNextInstructionToIssue(int funType);
+	int addToIssueQueue(IQEntry *iqEntry, int funType);
 	int removeEntry(IQEntry * entry);
 	void printIssueQueue();
+	void updateIssueQueueEntries(int u_reg, int u_reg_value);
 };
 
 

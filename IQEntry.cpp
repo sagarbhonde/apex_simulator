@@ -28,9 +28,23 @@ IQEntry::IQEntry(int rd, int rs1, int rs2, int imm, int pc, int fuType,
 }
 
 int IQEntry::getStatus() const {
-	if (allocated == 1)
+	if (allocated == 1) {
+		if(strcmp("MOVC", this->opcode) == 0)
+			return 1;
 		return src1Valid == 1 && src2Valid == 1 ? 1 : 0;
+	}
 	return 0;
+}
+
+void IQEntry::setStatus() {
+	if(allocated == 1)
+	{
+		if(strcmp("MOVC", this->opcode) == 0)
+			this->status = 1;
+		else if(src1Valid == 1 && src2Valid == 1)
+			this->status = 1;
+
+	}
 }
 
 void IQEntry::printIQEntryOP() {
@@ -57,5 +71,6 @@ void IQEntry::printIQEntry() {
 			<< "OPCODE: " << this->opcode << endl << "SRC1 value: "
 			<< this->src1Value << endl << "SRC2 value: " << this->src2Value
 			<< endl << "Status: " << this->status << endl << endl;
+	cout.flush();
 }
 

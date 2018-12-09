@@ -18,6 +18,8 @@ using namespace std;
 #define GARBAGE 2147483647
 #define ARCHITECTURAL_REG_SIZE  16
 #define URF_SIZE  40
+#define TRUE 1
+#define FALSE 0
 
 
 enum Intruction_type
@@ -42,7 +44,7 @@ enum SLOT_STATUS
 
 enum MISC
 {
-    VALID
+    VALID=1
 };
 
 #endif //CIRCULAR_QUEUE_HELPER_H

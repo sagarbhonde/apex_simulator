@@ -10,7 +10,7 @@ URF::URF() {
 
 	memset(&F_RAT, 0, sizeof(F_RAT));
 	memset(&URF_TABLE_valid, 0, sizeof(URF_TABLE_valid));
-	memset(&B_RAT, 0, sizeof(B_RAT));
+	memset(&B_RAT, -1, sizeof(B_RAT));
 	memset(&URF_Table, GARBAGE, sizeof(URF_Table));
 
 	for (int i = 0; i < ARCHITECTURAL_REG_SIZE; i++) {
@@ -63,15 +63,15 @@ URF &URF::operator=(const URF &urf) {
 void URF::print_f_rat() {
 //	RAT[00] --> U0
 	for (int i = 0; i < ARCHITECTURAL_REG_SIZE; i++) {
-		cout << "RAT[" << i << "] --> U[" << F_RAT[i] << "]" << endl;
+		cout << "RAT[" << i << "] --> U" << F_RAT[i] << "" << endl;
 	}
 }
 
 void URF::print_r_rat() {
 
 	for (int i = 0; i < ARCHITECTURAL_REG_SIZE; i++) {
-		if (B_RAT[i] != 0)
-			cout << "R-RAT[" << i << "] --> U[" << B_RAT[i] << "]" << endl;
+		if (B_RAT[i] != -1)
+			cout << "R-RAT[" << i << "] --> U" << B_RAT[i] << "" << endl;
 	}
 }
 
@@ -79,6 +79,7 @@ void URF::print_urf() {
 	for (int i = 0; i < URF_SIZE; i++) {
 		cout << " |U " << i << "  | -> " << URF_Table[i] << " |" << endl;
 	}
+
 }
 
 ostream& operator<<(ostream& out, const URF* urf) {
@@ -120,3 +121,14 @@ URF URF::takeSnapshot() {
 
 	return urf_snap;
 }
+
+bool URF::restoreSnapshot(URF urf_snap) {
+
+    copy(F_RAT, F_RAT + ARCHITECTURAL_REG_SIZE, urf_snap.F_RAT);
+    copy(B_RAT, B_RAT + ARCHITECTURAL_REG_SIZE, urf_snap.B_RAT);
+    copy(URF_Table, URF_Table + URF_SIZE, urf_snap.URF_Table);
+    urf_snap.free_register_list = free_register_list;
+
+    return true;
+}
+

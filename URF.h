@@ -19,8 +19,8 @@ public:
     int F_RAT[ARCHITECTURAL_REG_SIZE]; // Front-end rename table
 
     int URF_Table[URF_SIZE];           // Unified reg file.
-    int URF_TABLE_valid[URF_SIZE];
-
+    int URF_TABLE_valid[URF_SIZE];     // valid or not
+    int URF_Z[URF_SIZE]; //zeroflag
 
     queue<int> free_register_list;                 // Free list(physical registers)
 
@@ -43,6 +43,8 @@ public:
     void print_urf();
 
     URF takeSnapshot();
+
+    bool restoreSnapshot(URF urf_snap);
 
     };
 

@@ -38,6 +38,7 @@ public:
         m_slot_status = UNALLOCATED;
         m_CFID = GARBAGE;
         m_pv_saved_info = 0; // nullptr
+        m_unified_register = GARBAGE;
     }
 
     int getStatus() const;
@@ -84,7 +85,7 @@ public:
 
     int getM_unifier_register() const;
 
-    void setM_unifier_register(int m_unified_register);
+    void setM_unifier_register(int unified_register);
 
 };
 

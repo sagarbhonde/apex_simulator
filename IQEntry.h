@@ -41,8 +41,10 @@ public:
 	void printIQEntry();
 
 	void printIQEntryOP();
+	void setStatus();
 
-	IQEntry* operator =(IQEntry *b) {
+
+		IQEntry* operator =(IQEntry *b) {
 		this->allocated = b->allocated;
 		this->pc = b->pc;
 		this->rd = b->rd;

@@ -34,14 +34,35 @@ typedef struct APEX_Instruction {
 	int imm;		    // Literal Value
 } APEX_Instruction;
 
+typedef struct Int_BUS {
+    int r;
+    int r_value;
+    int zeroFlag;
+} Int_Bus;
+
+typedef struct Mul_BUS {
+    int r;
+    int r_value;
+    int zeroFlag;
+} Mul_Bus;
+
+typedef struct Mem_BUS {
+    int r;
+    int r_value;
+    int zeroFlag;
+} Mem_Bus;
+
+
 /* Model of CPU stage latch */
 typedef struct CPU_Stage {
 	int pc;		    // Program Counter
 	char opcode[128];	// Operation Code
 	int rs1;		    // Source-1 Register Address
 	int u_rs1;
+	int u_rs1_valid;
 	int rs2;		    // Source-2 Register Address
 	int u_rs2;
+	int u_rs2_valid;
 	int rd;		    // Destination Register Address
 	int u_rd;
 	int imm;		    // Literal Value
@@ -89,6 +110,10 @@ typedef struct APEX_CPU {
 	URF* urf;
 
 	map<int,APEX_Instruction*> *imap;
+
+	Int_Bus int_bus;
+	Mul_Bus mul_bus;
+	Mem_Bus mem_bus;
 
 } APEX_CPU;
 

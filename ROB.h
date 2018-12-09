@@ -27,12 +27,12 @@ public:
 
     bool add_instruction_to_ROB(Rob_entry entry);
     bool retire_instruction_from_ROB();
-    bool update_ROB_slot(int pc_value, int unified_reg, int flag, int status);
+    bool update_ROB_slot(int pc_value, int unified_reg, int flag, int status, int result);
     bool isFull();
     bool isempty();
     void print_slot_contents(int index); // For logging indivisual slot
-    friend ostream& operator<<(ostream& out, const ROB& rob); // For logging whole ROB.
-    void print_rob();
+    friend ostream& operator<<(ostream& out, const ROB* rob); // For logging whole ROB.
+    void print_rob(int limit);
     bool flush_ROB_entries();
 };
 

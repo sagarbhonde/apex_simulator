@@ -90,6 +90,7 @@ Rob_entry &Rob_entry::operator=(const Rob_entry &entry) {
         m_slot_status = entry.m_slot_status;
         m_CFID = entry.getCFID();
         m_pv_saved_info = entry.m_pv_saved_info; //todo: need to assign memory/ shallow copy
+        m_unified_register = entry.m_unified_register;
     }
 
     return *this;
@@ -107,6 +108,7 @@ ostream& operator<<(ostream &out, const Rob_entry& entry)
     out<<"result: "<<entry.getResult()<<endl;
     out<<"slot_status: "<<entry.getslot_status()<<endl;
     out<<"m_CFID: "<<entry.getCFID()<<endl;
+    out<<"m_unified_reg: "<<entry.getM_unifier_register()<<endl;
     out<<"================================================"<<endl;
 
     return out;
@@ -124,7 +126,7 @@ int Rob_entry::getM_unifier_register() const {
     return m_unified_register;
 }
 
-void Rob_entry::setM_unifier_register(int m_unified_register) {
-    Rob_entry::m_unified_register = m_unified_register;
+void Rob_entry::setM_unifier_register(int unified_register) {
+    Rob_entry::m_unified_register = unified_register;
 }
 

@@ -93,28 +93,28 @@ void ROB::print_slot_contents(int index) {
     }
 }
 
-ostream& operator<<(std::ostream& out, const ROB& rob)
+ostream& operator<<(std::ostream& out, const ROB* rob)
 {
     out<<" ** ROB Circular Buffer Data ** "<<endl;
     for(int i = 0; i < ROB_SIZE; ++i)
     {
         out<<"Slot No: "<<i<<endl;
-        out<<rob.rob_queue[i]<<endl;
+        out<<rob->rob_queue[i]<<endl;
     }
     return out;
 }
 
-void ROB::print_rob()
+void ROB::print_rob(int limit)
 {
     cout<<" ** ROB Circular Buffer Data ** "<<endl;
-    for(int i = 0; i < ROB_SIZE; ++i)
+    for(int i = 0; i < limit; ++i)
     {
         cout<<"Slot No: "<<i<<endl;
         cout<<rob_queue[i]<<endl;
     }
 }
 
-bool ROB::update_ROB_slot(int pc_value, int unified_reg, int flag, int status) {
+bool ROB::update_ROB_slot(int pc_value, int unified_reg, int flag, int status, int result) {
 
     // find the respective slot and update it.
     map<int,int>::iterator itr;
@@ -122,21 +122,22 @@ bool ROB::update_ROB_slot(int pc_value, int unified_reg, int flag, int status) {
     int slot_id = itr->second;
 
     // get the entry at given slot index.
-    Rob_entry entry = rob_queue[slot_id];
+    Rob_entry* entry = &rob_queue[slot_id];
 
-    if(entry.getslot_status() != UNALLOCATED)
+    if(entry->getslot_status() != UNALLOCATED)
     {
         // Check if UR is same.
-        if(entry.getM_unifier_register() == unified_reg) {
-//            entry.setUnifier_register_value(unified_reg_val); // Updating URF val
-            entry.setExcodes(flag);
+        if(entry->getM_unifier_register() == unified_reg) {
+//            entry->setUnifier_register_value(unified_reg_val); // Updating URF val
+            entry->setExcodes(flag);
 
             // marking result as valid.
-            entry.setStatus(status);
+            entry->setStatus(status);
+            entry->setResult(result);
 
             //@discuss: Since URF value is ready, Marking slot's status as COMPLETED.
             // other status WAITING, EXECUTING will be marked by respective stages.
-            entry.setslot_status(COMPLETED);
+            entry->setslot_status(COMPLETED);
         }
     }
     else
