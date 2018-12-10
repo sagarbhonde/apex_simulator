@@ -111,24 +111,29 @@ ostream& operator<<(ostream& out, const URF* urf) {
 	return out;
 }
 
-URF URF::takeSnapshot() {
-	URF urf_snap;
+URF_data* URF::takeSnapshot(int cfid) {
+	URF_data *urf_snap = new URF_data;
 
-	copy(F_RAT, F_RAT + ARCHITECTURAL_REG_SIZE, urf_snap.F_RAT);
-	copy(B_RAT, B_RAT + ARCHITECTURAL_REG_SIZE, urf_snap.B_RAT);
-	copy(URF_Table, URF_Table + URF_SIZE, urf_snap.URF_Table);
-	urf_snap.free_register_list = free_register_list;
+	urf_snap->CFID = cfid;
+	copy(F_RAT, F_RAT + ARCHITECTURAL_REG_SIZE, urf_snap->F_RAT);
+	copy(B_RAT, B_RAT + ARCHITECTURAL_REG_SIZE, urf_snap->B_RAT);
+	copy(URF_Table, URF_Table + URF_SIZE, urf_snap->URF_Table);
+	copy(URF_TABLE_valid, URF_TABLE_valid + URF_SIZE, urf_snap->URF_TABLE_valid);
+	copy(URF_Z, URF_Z + URF_SIZE, urf_snap->URF_Z);
+	urf_snap->free_register_list = free_register_list;
 
 	return urf_snap;
 }
 
-bool URF::restoreSnapshot(URF urf_snap) {
+int URF::restoreSnapshot(URF_data urf_snap) {
 
-    copy(F_RAT, F_RAT + ARCHITECTURAL_REG_SIZE, urf_snap.F_RAT);
-    copy(B_RAT, B_RAT + ARCHITECTURAL_REG_SIZE, urf_snap.B_RAT);
-    copy(URF_Table, URF_Table + URF_SIZE, urf_snap.URF_Table);
-    urf_snap.free_register_list = free_register_list;
+    copy(urf_snap.F_RAT, urf_snap.F_RAT + ARCHITECTURAL_REG_SIZE, F_RAT);
+    copy(urf_snap.B_RAT, urf_snap.B_RAT + ARCHITECTURAL_REG_SIZE, B_RAT);
+    copy(urf_snap.URF_Table, urf_snap.URF_Table + URF_SIZE, URF_Table);
+    copy(urf_snap.URF_TABLE_valid, urf_snap.URF_TABLE_valid + URF_SIZE, URF_TABLE_valid);
+    copy(urf_snap.URF_Z, urf_snap.URF_Z + URF_SIZE, URF_Z);
+    free_register_list = urf_snap.free_register_list;
 
-    return true;
+    return urf_snap.CFID;
 }
 

@@ -6,7 +6,7 @@
 #include "rob_entry.h"
 
 Rob_entry::~Rob_entry() {
-    delete (Rob_entry*)m_pv_saved_info;
+    //delete (Rob_entry*)m_pv_saved_info;
 }
 
 int Rob_entry::getStatus() const {
@@ -96,19 +96,19 @@ Rob_entry &Rob_entry::operator=(const Rob_entry &entry) {
     return *this;
 }
 
-ostream& operator<<(ostream &out, const Rob_entry& entry)
+ostream& operator<<(ostream &out, const Rob_entry* entry)
 {
     // Using this for logging purpose
     out<<"================================================"<<endl;
-    out<<"slot_id: "<<entry.get_slot_id()<<endl;
-    out<<"status: "<<entry.getStatus()<<endl;
-    out<<"pc_value: "<<entry.getPc_value()<<endl;
-    out<<"architecture register: "<<entry.getArchiteture_register()<<endl;
-    out<<"excodes: "<<entry.getExcodes()<<endl;
-    out<<"result: "<<entry.getResult()<<endl;
-    out<<"slot_status: "<<entry.getslot_status()<<endl;
-    out<<"m_CFID: "<<entry.getCFID()<<endl;
-    out<<"m_unified_reg: "<<entry.getM_unifier_register()<<endl;
+    out<<"slot_id: "<<entry->get_slot_id()<<endl;
+    out<<"status: "<<entry->getStatus()<<endl;
+    out<<"pc_value: "<<entry->getPc_value()<<endl;
+    out<<"architecture register: "<<entry->getArchiteture_register()<<endl;
+    out<<"excodes: "<<entry->getExcodes()<<endl;
+    out<<"result: "<<entry->getResult()<<endl;
+    out<<"slot_status: "<<entry->getslot_status()<<endl;
+    out<<"m_CFID: "<<entry->getCFID()<<endl;
+    out<<"m_unified_reg: "<<entry->getM_unifier_register()<<endl;
     out<<"================================================"<<endl;
 
     return out;

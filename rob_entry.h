@@ -77,7 +77,7 @@ public:
 
     Rob_entry& operator=(const Rob_entry& entry);
 
-    friend ostream& operator<<(ostream &out, const Rob_entry& entry);
+    friend ostream& operator<<(ostream &out, const Rob_entry* entry);
 
     int get_slot_id() const;
 

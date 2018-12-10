@@ -2,9 +2,9 @@
 #define _APEX_CPU_H_
 #include "IQ.h"
 #include "ROB.h"
-#include "rob_entry.h"
-#include "IQEntry.h"
 #include "URF.h"
+#include "LSQ.h"
+#include "BTB.h"
 #include "helper.h"
 #include <map>
 
@@ -109,6 +109,12 @@ typedef struct APEX_CPU {
 	/* URF */
 	URF* urf;
 
+	/* LSQ */
+	LSQ* lsq;
+
+	/*BTS / BTB*/
+	BTB* btb;
+
 	map<int,APEX_Instruction*> *imap;
 
 	Int_Bus int_bus;
@@ -116,6 +122,7 @@ typedef struct APEX_CPU {
 	Mem_Bus mem_bus;
 
 } APEX_CPU;
+
 
 APEX_Instruction*
 create_code_memory(const char* filename, int* size);

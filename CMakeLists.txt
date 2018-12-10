@@ -24,4 +24,10 @@ add_executable(apex_simulator
         URF.cpp
         ForwardBus.cpp
         ForwardBus.h
+        LSQ.cpp
+        LSQ.h
+        lsq_entry.cpp
+        lsq_entry.h
+        BTB.cpp
+        BTB.h
         Makefile)

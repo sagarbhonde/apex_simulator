@@ -44,6 +44,15 @@ bool ROB::retire_instruction_from_ROB() {
         rob_queue[head].setslot_status(UNALLOCATED);
         pc_slot_map.erase(rob_queue[head].getPc_value()); // remove from map
 
+
+        // For Control Flow instructions, we had allocated memory for storing snapshot.
+        // During retirement, we dont need it. So de-allocating that.
+
+        if(rob_queue[head].m_pv_saved_info) {
+            delete rob_queue[head].m_pv_saved_info;
+            rob_queue[head].m_pv_saved_info = 0;
+        }
+
         if(head == tail)    // Last element
         {
             head = tail = -1;
@@ -89,7 +98,7 @@ void ROB::print_slot_contents(int index) {
     else
     {
         cout<<"Slot No: "<<index<<endl;
-        cout<<rob_queue[index];
+        cout<<&rob_queue[index];
     }
 }
 
@@ -99,7 +108,7 @@ ostream& operator<<(std::ostream& out, const ROB* rob)
     for(int i = 0; i < ROB_SIZE; ++i)
     {
         out<<"Slot No: "<<i<<endl;
-        out<<rob->rob_queue[i]<<endl;
+        out<<&rob->rob_queue[i]<<endl;
     }
     return out;
 }
@@ -110,7 +119,7 @@ void ROB::print_rob(int limit)
     for(int i = 0; i < limit; ++i)
     {
         cout<<"Slot No: "<<i<<endl;
-        cout<<rob_queue[i]<<endl;
+        cout<<&rob_queue[i]<<endl;
     }
 }
 

@@ -12,6 +12,26 @@
 #include <string.h>
 #include "helper.h"
 
+struct URF_data{
+    int B_RAT[ARCHITECTURAL_REG_SIZE]; // Back-end rename table
+    int F_RAT[ARCHITECTURAL_REG_SIZE]; // Front-end rename table
+    int URF_Table[URF_SIZE];           // Unified reg file.
+    int URF_TABLE_valid[URF_SIZE];     // valid or not
+    int URF_Z[URF_SIZE]; //zeroflag
+    queue<int> free_register_list;
+    int CFID;
+    URF_data()
+    {
+        CFID = GARBAGE;
+        memset(&F_RAT, GARBAGE, sizeof(F_RAT));
+        memset(&URF_TABLE_valid, GARBAGE, sizeof(URF_TABLE_valid));
+        memset(&B_RAT, GARBAGE, sizeof(B_RAT));
+        memset(&URF_Table, GARBAGE, sizeof(URF_Table));
+        memset(&URF_TABLE_valid, GARBAGE, sizeof(URF_TABLE_valid));
+        memset(&URF_Z, GARBAGE, sizeof(URF_Z));
+    }
+};
+
 
 class URF{
 public:
@@ -42,9 +62,9 @@ public:
 
     void print_urf();
 
-    URF takeSnapshot();
+    URF_data* takeSnapshot(int cfid);
 
-    bool restoreSnapshot(URF urf_snap);
+    int restoreSnapshot(URF_data urf_snap); // This will return CFID.
 
     };
 

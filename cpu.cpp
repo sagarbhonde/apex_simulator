@@ -71,6 +71,12 @@ APEX_cpu_init(const char *filename) {
     /*Initialize URF */
     cpu->urf = new URF();
 
+    /*Initialize LSQ */
+    cpu->lsq = new LSQ();
+
+    /*Initialize BTB*/
+    cpu->btb = new BTB();
+
     /* Initialize PC, Registers and all pipeline stages */
     cpu->pc = 4000;
     memset(cpu->stage, 0, sizeof(CPU_Stage) * NUM_STAGES);
@@ -132,6 +138,9 @@ void APEX_cpu_stop(APEX_CPU *cpu) {
     printf("=============== STATE OF ROB ==========\n\n");
     cpu->rob->print_rob(10); // print only 10 entries.
 
+    printf("=============== LSQ ==========\n\n");
+    cout << cpu->lsq << endl;
+
     printf("=============== URF ==========\n\n");
     cout << cpu->urf << endl;
 
@@ -151,7 +160,9 @@ void APEX_cpu_stop(APEX_CPU *cpu) {
     // delete IQ and ROB
     delete cpu->urf;
     delete cpu->iq;
+    delete cpu->lsq;
     delete cpu->rob;
+    delete cpu->btb;
     delete cpu->imap;
 
     free(cpu);
@@ -328,8 +339,16 @@ int renamer(APEX_CPU *cpu) {
  */
 int decode(APEX_CPU *cpu) {
     CPU_Stage *stage = &cpu->stage[DRF];
+
+    // as per specification, HALT stalls the D/RF stage and adds entry in ROB. No entry in IQ is needed
     if(strcmp(stage->opcode, "HALT") == 0) {
         cpu->stage[F].stalled = 1;
+
+        Rob_entry rob_entry;
+        rob_entry.setPc_value(stage->pc);
+        if (cpu->rob->add_instruction_to_ROB(rob_entry)) {                         // Adding to ROB
+            cout << "HALT is  added to ROB" << endl;
+        }
     }
 
         if (!stage->busy && !stage->stalled) {
@@ -442,6 +461,19 @@ int addToQueues(APEX_CPU *cpu) {
             rob_entry.setPc_value(stage->pc);
             rob_entry.setArchiteture_register(stage->rd);
             rob_entry.setM_unifier_register(stage->u_rd);
+
+
+            //
+            /* Following piece of code has to be used during BRANCH instructions. It takes the snapshot
+             * of current URF and rename table and stores in ROB entry.
+             *
+
+                URF_data *temp = cpu->urf->takeSnapshot(2);  // 2 = CFID
+                rob_entry.setPv_saved_info(temp);
+
+
+             * */
+
             if (cpu->rob->add_instruction_to_ROB(rob_entry)) {                         // Adding to ROB
                 cout << "entry added to ROB" << endl;
             }
@@ -659,6 +691,21 @@ int retireInstruction(APEX_CPU *cpu) {
             int rd_status = headEntry->m_status;
             if (rd_status == 1) {
                 headEntry->setslot_status(UNALLOCATED);
+
+
+                /* Following piece of code needs to be used during branch misprediction.
+                 *
+                 * It restores the contents of URF and rename table.
+                 *
+                 *
+                // delme: just testing whether correct snapshot can be copied or not. [ Control flow | Recovery]
+
+                URF_data *temp;
+                temp = (URF_data*)headEntry->getPv_saved_info();
+                cpu->urf->restoreSnapshot(*temp);
+
+                 */
+
 
                 //Dont free the register immediately unless it's renamer instruction comes.
                 //Just update the register content to B-RAT

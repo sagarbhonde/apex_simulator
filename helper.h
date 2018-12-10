@@ -20,7 +20,8 @@ using namespace std;
 #define URF_SIZE  40
 #define TRUE 1
 #define FALSE 0
-
+#define LSQ_SIZE 20
+#define CFID_SIZE 8
 
 enum Intruction_type
 {
@@ -44,7 +45,9 @@ enum SLOT_STATUS
 
 enum MISC
 {
-    VALID=1
+    VALID=1,
+    LOAD,
+    STORE
 };
 
 #endif //CIRCULAR_QUEUE_HELPER_H
