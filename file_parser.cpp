@@ -64,9 +64,20 @@ static void create_APEX_instruction(APEX_Instruction* ins, char* buffer) {
 		ins->rd = get_num_from_string(tokens[1]);
 		ins->rs1 = get_num_from_string(tokens[2]);
 	}
+	if (strcmp(ins->opcode, "ADDL") == 0) {
+		ins->imm = get_num_from_string(tokens[3]);
+		ins->rd = get_num_from_string(tokens[1]);
+		ins->rs1 = get_num_from_string(tokens[2]);
+	}
 
 	if (strcmp(ins->opcode, "SUB") == 0) {
 		ins->rs2 = get_num_from_string(tokens[3]);
+		ins->rd = get_num_from_string(tokens[1]);
+		ins->rs1 = get_num_from_string(tokens[2]);
+	}
+
+	if (strcmp(ins->opcode, "SUBL") == 0) {
+		ins->imm = get_num_from_string(tokens[3]);
 		ins->rd = get_num_from_string(tokens[1]);
 		ins->rs1 = get_num_from_string(tokens[2]);
 	}
@@ -139,7 +150,7 @@ create_code_memory(const char* filename, int* size) {
 		return NULL;
 	}
 
-	APEX_Instruction* code_memory = (APEX_Instruction*)malloc(
+	APEX_Instruction* code_memory = (APEX_Instruction*) malloc(
 			sizeof(*code_memory) * code_memory_size);
 	if (!code_memory) {
 		fclose(fp);

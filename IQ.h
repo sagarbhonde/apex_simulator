@@ -9,6 +9,7 @@
 #define IQ_H_
 #define IQ_SIZE 16
 #include "IQEntry.h"
+#include "vector"
 
 using namespace std;
 
@@ -23,6 +24,8 @@ public:
 	int removeEntry(IQEntry * entry);
 	void printIssueQueue();
 	void updateIssueQueueEntries(int u_reg, int u_reg_value);
+	IQEntry sortTemporary(IQEntry selected_entries[]);
+	void flushIQEntries(int cfid);
 };
 
 

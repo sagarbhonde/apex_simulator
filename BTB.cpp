@@ -13,6 +13,7 @@ BTB::BTB() {
     {
         free_CFID_list.push_back(i);
     }
+    last_control_flow_instr = -1;
 }
 
 int BTB::get_next_free_CFID() {

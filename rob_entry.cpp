@@ -30,7 +30,7 @@ int Rob_entry::getExcodes() const {
 }
 
 int Rob_entry::getslot_status() const {
-    return m_slot_status;
+    return allocated;
 }
 
 int Rob_entry::getCFID() const {
@@ -50,7 +50,7 @@ void Rob_entry::setCFID(int CFID) {
 }
 
 void Rob_entry::setslot_status(SLOT_STATUS slot_status) {
-    Rob_entry::m_slot_status = slot_status;
+    Rob_entry::allocated = slot_status;
 }
 
 void Rob_entry::setExcodes(int excodes) {
@@ -87,7 +87,7 @@ Rob_entry &Rob_entry::operator=(const Rob_entry &entry) {
         m_architeture_register = entry.m_architeture_register;
         m_excodes = entry.m_excodes;
         m_result = entry.m_result;
-        m_slot_status = entry.m_slot_status;
+        allocated = entry.allocated;
         m_CFID = entry.getCFID();
         m_pv_saved_info = entry.m_pv_saved_info; //todo: need to assign memory/ shallow copy
         m_unified_register = entry.m_unified_register;

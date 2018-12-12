@@ -17,7 +17,7 @@ struct URF_data{
     int F_RAT[ARCHITECTURAL_REG_SIZE]; // Front-end rename table
     int URF_Table[URF_SIZE];           // Unified reg file.
     int URF_TABLE_valid[URF_SIZE];     // valid or not
-    int URF_Z[URF_SIZE]; //zeroflag
+    int URF_Z[URF_SIZE]; 				//zeroflag
     queue<int> free_register_list;
     int CFID;
     URF_data()

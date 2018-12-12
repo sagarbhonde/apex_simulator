@@ -6,6 +6,7 @@
  */
 #include <iostream>
 #include <cstdlib>
+#include <string.h>
 
 #define GARBAGE 2147483647
 #ifndef IQENTRY_H_
@@ -13,9 +14,8 @@
 using namespace std;
 
 class IQEntry {
-private:
-	int status;    //status = 1 (Instruction is ready to dispatch) else not
 public:
+	int status;    //status = 1 (Instruction is ready to dispatch) else not
 	int allocated; //allocated = 1 (Slot is allocated) else free
 	int pc;
 	int fuType;    //enum value
@@ -28,7 +28,10 @@ public:
 	int rd;        //renamed rd address
 	int lsqIndex;
 	int literal;
-	char *opcode;
+	int clock;     // to decide earliest instruction to issue
+	int CFID;
+	int rob_slot_id;
+	char opcode[128];
 
 	//status
 	int getStatus() const;
@@ -36,15 +39,13 @@ public:
 	IQEntry() {
 	}
 	//Parameterized Constructor
-	IQEntry(int rd, int rs1, int rs2, int imm, int pc, int fuType,
-			char* opcode);
+	IQEntry(int rd, int rs1, int rs2, int imm, int pc, int fuType, char opcode[128],
+			int clock);
 	void printIQEntry();
 
 	void printIQEntryOP();
 	void setStatus();
-
-
-		IQEntry* operator =(IQEntry *b) {
+	IQEntry* operator =(IQEntry *b) {
 		this->allocated = b->allocated;
 		this->pc = b->pc;
 		this->rd = b->rd;
@@ -55,12 +56,18 @@ public:
 		this->src2 = b->src2;      //src2 address
 		this->lsqIndex = b->lsqIndex;
 		this->literal = b->literal;
-		this->opcode = b->opcode;
+		strcpy(this->opcode, b->opcode);
 		this->src1Value = b->src1Value;
 		this->src2Value = b->src2Value;
 		this->status = b->status;
+		this->clock = b->clock;
+		this->CFID = b->CFID;
+		this->rob_slot_id = b->rob_slot_id;
 		return this;
 	}
+
+	bool operator<(IQEntry &i1);
+
 };
 
 #endif /* IQENTRY_H_ */

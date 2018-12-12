@@ -25,15 +25,18 @@ public:
 
     virtual ~ROB();
 
-    bool add_instruction_to_ROB(Rob_entry entry);
+    int add_instruction_to_ROB(Rob_entry entry);
     bool retire_instruction_from_ROB();
-    bool update_ROB_slot(int pc_value, int unified_reg, int flag, int status, int result);
+    bool update_ROB_slot(int pc_value, int curr_cfid, int flag, int status, int result);
     bool isFull();
     bool isempty();
     void print_slot_contents(int index); // For logging indivisual slot
     friend ostream& operator<<(ostream& out, const ROB* rob); // For logging whole ROB.
     void print_rob(int limit);
-    bool flush_ROB_entries();
+    bool flush_ROB_entries(int from_slot_id);
+    bool check_with_rob_head(int pc_value);
+    int get_slot_id_from_cfid(int cfid, int pc);
+    int get_zero_flag_at_slot_id(int slot_id);
 };
 
 #endif //CIRCULAR_QUEUE_ROB_H

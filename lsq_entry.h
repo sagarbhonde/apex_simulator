@@ -14,7 +14,8 @@ class LSQ_entry{
 public:
     int m_index;
     int m_pc;
-    int m_status; // indicates LSQ entry  is allocated/free
+    int allocated; // indicates LSQ entry  is allocated/free
+    int m_status;    //indicates if ready to execute
     int m_which_ins; // Load/Store?
     int m_memory_addr;  // memory address. This will be updated by IQ
     bool m_is_memory_addr_valid; // Is memory address valid?
@@ -22,6 +23,8 @@ public:
     int m_store_reg;        //for STORE, src1
     bool m_is_register_valid; // for STORE, is src1 valid?
     int m_store_reg_value; // for STORE, src1 value.
+    int CFID;
+    LSQ_entry(int which_ins, int dest_reg, int store_reg, int store_reg_value, int is_store_reg_valid);
 
     LSQ_entry()
     {
@@ -34,7 +37,9 @@ public:
         m_store_reg = GARBAGE;
         m_is_register_valid = GARBAGE;
         m_store_reg_value = GARBAGE;
+        CFID = -1;
     }
+
 
     // methods
     int getM_index() const;

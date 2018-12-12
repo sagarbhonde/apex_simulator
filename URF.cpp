@@ -12,7 +12,7 @@ URF::URF() {
 	memset(&URF_TABLE_valid, 0, sizeof(URF_TABLE_valid));
 	memset(&B_RAT, -1, sizeof(B_RAT));
 	memset(&URF_Table, GARBAGE, sizeof(URF_Table));
-
+	memset(&URF_Z, -1, sizeof(URF_Z));
 	for (int i = 0; i < ARCHITECTURAL_REG_SIZE; i++) {
 		F_RAT[i] = i;
 //		B_RAT[i] = i;

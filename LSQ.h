@@ -25,7 +25,7 @@ public:
     virtual ~LSQ();
 
     LSQ_entry* check_head_instruction_from_LSQ();
-    bool add_instruction_to_LSQ(LSQ_entry entry);
+    int add_instruction_to_LSQ(LSQ_entry entry);//returns slot id
     LSQ_entry* retire_instruction_from_LSQ();  // gives the head instruction.
     bool update_LSQ_index(int index, int status, int memory_address);
     bool isFull();
@@ -33,7 +33,7 @@ public:
     void print_slot_contents(int index); // For logging indivisual slot
     friend ostream& operator<<(ostream& out, const LSQ* lsq); // For logging whole ROB.
     void print_lsq(int limit);
-    bool flush_LSQ_entries();
+    void flushLSQEntries(int cfid);
 };
 
 #endif //LSQ_LSQ_H

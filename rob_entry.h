@@ -11,7 +11,7 @@
 class Rob_entry{
 public:
 	int m_slot_id;        // used to update the ROB entry
-	int m_slot_status;    // indicated if slot is allocated or not
+	int allocated;    // indicated if slot is allocated or not
     int m_status;         // indicates whether result is VALID or not
     int m_pc_value;       // pc value of instruction in code memory
     int m_excodes;        // conatins exception codes/ flags
@@ -35,7 +35,7 @@ public:
         m_architeture_register = GARBAGE;
         m_excodes = GARBAGE;
         m_result = GARBAGE;
-        m_slot_status = UNALLOCATED;
+        allocated = UNALLOCATED;
         m_CFID = GARBAGE;
         m_pv_saved_info = 0; // nullptr
         m_unified_register = GARBAGE;

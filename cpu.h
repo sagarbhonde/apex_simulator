@@ -74,6 +74,7 @@ typedef struct CPU_Stage {
 	int stalled;		// Flag to indicate, stage is stalled
 	int fuType;       // Function Unit Type ENUM value
 	int zeroFlag;
+	int CFID;
 } CPU_Stage;
 
 
@@ -114,6 +115,10 @@ typedef struct APEX_CPU {
 
 	/*BTS / BTB*/
 	BTB* btb;
+
+	/*ZERO FLAG*/
+	int zero_flag;
+
 
 	map<int,APEX_Instruction*> *imap;
 

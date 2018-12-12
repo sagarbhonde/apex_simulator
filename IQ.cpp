@@ -8,6 +8,8 @@
 #include "IQ.h"
 #include <iostream>
 #include <string.h>
+#include <vector>
+#include <algorithm>    // std::sort
 using namespace std;
 
 IQ::IQ() {
@@ -15,34 +17,72 @@ IQ::IQ() {
 	memset(&issueQueue, 0, sizeof(IQEntry) * IQ_SIZE);
 }
 
-IQEntry IQ::getNextInstructionToIssue(int funType) {
+IQEntry IQ::sortTemporary(IQEntry selected_entries[]) {
 	IQEntry e;
-	for(int i=0;i<IQ_SIZE; i++) {
-		e = issueQueue[i];
-		if(e.getStatus() == 1 && e.fuType == funType)
-			return e;
+	IQEntry key;
+	int j = 0;
+
+	for (int i = 1; i < sizeof(selected_entries) / sizeof(selected_entries[0]);
+			i++) {
+		key = selected_entries[i];
+		j = i - 1;
+		while (key < selected_entries[j] && j >= 0) {
+			selected_entries[j + 1] = selected_entries[j];
+			j -= 1;
+		}
+		selected_entries[j + 1] = key;
 	}
-	return e;
+	return selected_entries[0];
 }
 
-void IQ:: updateIssueQueueEntries(int u_reg, int u_reg_value) {
-	for(int i = 0; i<IQ_SIZE; i++) {
-		IQEntry e = issueQueue[i];
-		if(e.allocated == 1) {
-			if(e.src1 == u_reg) {
-				e.src1Value = u_reg_value;
-				e.src1Valid = 1;
-			} else if(e.src2 = u_reg) {
-				e.src2Value = u_reg_value;
-				e.src1Valid = 1;
-			}
-
-			if(e.src1Valid && e.src2Valid) // If both the sources are ready, means isntruction is ready to execute.
-				e.setStatus();
+void IQ::flushIQEntries(int cfid) {
+	for(int i = 0; i < IQ_SIZE; i++) {
+		if(issueQueue[i].CFID == cfid) {
+			issueQueue[i].allocated = 0;
 		}
 	}
 }
 
+IQEntry IQ::getNextInstructionToIssue(int funType) {
+
+	IQEntry tempArray[IQ_SIZE] = {};
+	IQEntry temp;
+	temp.allocated = 0;
+	tempArray[0] = temp;
+	IQEntry e;
+
+	for (int i = 0; i < IQ_SIZE; i++) {
+//		tempArray[i] = temp;
+		e = issueQueue[i];
+		if ((e.getStatus() == 1) && (e.fuType == funType) && (e.allocated == 1)) {
+			tempArray[i] = e;
+		}
+	}
+	if (tempArray != 0) {
+		IQEntry first = sortTemporary(tempArray);
+		if(first.allocated == 1)
+			return first;
+	}
+	return e;
+}
+
+void IQ::updateIssueQueueEntries(int u_reg, int u_reg_value) {
+	for (int i = 0; i < IQ_SIZE; i++) {
+		IQEntry e = issueQueue[i];
+		if (e.allocated == 1) {
+			if (e.src1 == u_reg) {
+				e.src1Value = u_reg_value;
+				e.src1Valid = 1;
+			} else if (e.src2 == u_reg) {
+				e.src2Value = u_reg_value;
+				e.src1Valid = 1;
+			}
+
+			if (e.src1Valid && e.src2Valid) // If both the sources are ready, means isntruction is ready to execute.
+				e.setStatus();
+		}
+	}
+}
 
 /*
  * for (IQEntry iq : issueQueue) {
@@ -68,9 +108,9 @@ int IQ::removeEntry(IQEntry * entry) {
 	return result;
 }
 
-void IQ:: printIssueQueue(){
-	for(int i=0; i< IQ_SIZE; i++) {
-		if(issueQueue[i].allocated == 1) {
+void IQ::printIssueQueue() {
+	for (int i = 0; i < IQ_SIZE; i++) {
+		if (issueQueue[i].allocated == 1) {
 			issueQueue[i].printIQEntryOP();
 		}
 	}
@@ -80,14 +120,17 @@ void IQ:: printIssueQueue(){
  *  mark entry's allocated bit 1
  *  if result == 1 then entry is added else it is not
  * */
-int IQ::addToIssueQueue(IQEntry* entry, int funType) {
+int IQ::addToIssueQueue(IQEntry* entry1, int funType) {
+	IQEntry* entry = entry1;
 	int result = 0;
 	int i = 0;
 	while (result == 0 && i < IQ_SIZE) {
 		if (issueQueue[i].allocated == 0) {
 			entry->allocated = 1;
 
-			if(strcmp("MOVC", entry->opcode) == 0)
+			if (strcmp(entry->opcode, "MOVC") == 0
+					|| strcmp(entry->opcode, "BZ") == 0
+					|| strcmp(entry->opcode, "BNZ") == 0)
 				entry->setStatus();
 			issueQueue[i] = entry;
 			result = 1;
