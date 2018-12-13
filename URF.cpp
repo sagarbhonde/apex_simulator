@@ -77,7 +77,11 @@ void URF::print_r_rat() {
 
 void URF::print_urf() {
 	for (int i = 0; i < URF_SIZE; i++) {
-		cout << " |U " << i << "  | -> " << URF_Table[i] << " |" << endl;
+		cout << " |U " << i << "       | ->    " << URF_Table[i] << " |";
+		if(URF_Table[i] == -1)
+		    cout<<" INVALID "<<endl;
+		else
+		    cout<<" VALID"<<endl;
 	}
 
 }

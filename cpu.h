@@ -138,6 +138,8 @@ APEX_cpu_init(const char* filename);
 int
 APEX_cpu_run(APEX_CPU* cpu);
 
+int APEX_cpu_run_for_cycles(APEX_CPU* cpu, int cycles, int action);
+
 void
 APEX_cpu_stop(APEX_CPU* cpu);
 

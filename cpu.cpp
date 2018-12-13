@@ -132,7 +132,7 @@ void APEX_cpu_stop(APEX_CPU *cpu) {
     printf("\n\n\n\n");
 
     printf(
-            "=============== STATE OF ARCHITECTURAL REGISTER FILE ==========\n\n");
+            "#--#--#--#--#--#--#--#--#--#--#--#--#--#-- SIMULATION FINISHED #--#--#--#--#--#--#--#--#--#--#--#--#\n\n");
     /*for (int i = 0; i < 16; i++) {
      char* status;
      status = cpu->regs_valid[i] == 1 ? "INVALID" : "VALID";
@@ -146,8 +146,8 @@ void APEX_cpu_stop(APEX_CPU *cpu) {
     /* printf("=============== LSQ ==========\n\n");
      cout << cpu->lsq << endl;*/
 
-    printf("=============== URF ==========\n\n");
-    cout << cpu->urf << endl;
+    //printf("=============== STATE OF UNIFIED REGISTER FILE ==========\n\n");
+    //cpu->urf->print_urf();
 
     /*printf("=============== STATE OF ISSUE QUEUE ==========\n\n");
      for (int i = 0; i < IQ_SIZE; i++) {
@@ -155,10 +155,10 @@ void APEX_cpu_stop(APEX_CPU *cpu) {
      cout << endl;
      }*/
 
-    printf("\n\n============== STATE OF DATA MEMORY =============\n\n");
-    for (int i = 0; i < 15; i++) {
-        printf("|\tMEM[%d]\t|\tData Value = %d\t|\n", i, cpu->data_memory[i]);
-    }
+    //printf("\n\n============== STATE OF DATA MEMORY =============\n\n");
+    //for (int i = 0; i < 15; i++) {
+//        printf("|\tMEM[%d]\t|\tData Value = %d\t|\n", i, cpu->data_memory[i]);
+  //  }
 
     // delete IQ and ROB
     delete cpu->urf;
@@ -272,7 +272,7 @@ static void print_stage_content(char *name, CPU_Stage *stage) {
 
 void print_register_status(APEX_CPU *cpu) {
     if (ENABLE_DEBUG_MESSAGES) {
-        //cout << "Details of RENAME TABLE (F-RAT) State --" << endl;
+        cout << "Details of RENAME TABLE (F-RAT) State --" << endl;
         cpu->urf->print_f_rat();
         cout << "---------------------------------------------" << endl;
         cout << "Details of RENAME TABLE (R-RAT) State --" << endl;
@@ -989,6 +989,7 @@ int intFU(APEX_CPU *cpu) {
                 drf_stage->stalled = 1;
                 queue_stage->stalled = 1;
                 fetch_stage->stalled = 1;
+
                 //FLUSH ROB
                 cpu->rob->flush_ROB_entries(tempSID, cpu);
                 //FLUSH not only IQ but also LSQ
@@ -1483,8 +1484,7 @@ int retireInstruction(APEX_CPU *cpu) {
  * 				 implementation
  */
 int APEX_cpu_run(APEX_CPU *cpu) {
-    int i = 100;
-    while (i > 0) {
+    while (1) {
 
         /* All the instructions committed, so exit */
         if (isHalt == TRUE) {
@@ -1499,7 +1499,7 @@ int APEX_cpu_run(APEX_CPU *cpu) {
             printf("--------------------------------\n");
         }
 
-        /*if(AnyInstructionRetired == 0)
+        if(AnyInstructionRetired == 0)
         {
             retireInstruction(cpu);
             retireInstruction(cpu);
@@ -1510,18 +1510,80 @@ int APEX_cpu_run(APEX_CPU *cpu) {
             retireInstruction(cpu);
             AnyInstructionRetired+=1;
         }
-        */
+
         retireInstruction(cpu);
         memFU(cpu);
-        //AnyInstructionRetired = 0; // reset
+        AnyInstructionRetired = 0; // reset
         intFU(cpu);
         mulFU(cpu);
         addToQueues(cpu);
         decode(cpu);
         fetch(cpu);
         cpu->clock++;
-        i--;
     }
 
     return 0;
 }
+
+
+void simulate(APEX_CPU* cpu)
+{
+    // STATE OF ARCHITECTURAL REGISTER FILE
+    printf("\n");
+    printf("=============== STATE OF URF ==========");
+    printf("\n");
+
+    cpu->urf->print_urf();
+
+    // STATE OF DATA MEMORY
+    printf("\n\n============== STATE OF DATA MEMORY =============\n\n");
+    for (int i = 0; i < 15; i++) {
+        printf("|\tMEM[%d]\t|\tData Value = %d\t|\n", i, cpu->data_memory[i]);
+    }
+}
+
+
+int
+APEX_cpu_run_for_cycles(APEX_CPU* cpu, int iNoOfCycles, int iAction) {
+    while (1) {
+
+        if(isHalt || (cpu->clock == iNoOfCycles))
+        {
+            simulate(cpu);
+            break;
+        }
+
+
+        if (iAction == 2) //display
+        {
+            printf("\n");
+            printf("---------------- CLOCK CYCLE %d ---------------------------\n", cpu->clock+1);
+            printf("\n");
+        }
+
+
+        if(AnyInstructionRetired == 0)
+        {
+            retireInstruction(cpu);
+            retireInstruction(cpu);
+
+            AnyInstructionRetired+=2;
+
+        } else if(AnyInstructionRetired == 1){
+            retireInstruction(cpu);
+            AnyInstructionRetired+=1;
+        }
+
+        memFU(cpu);
+        AnyInstructionRetired = 0; // reset
+        intFU(cpu);
+        mulFU(cpu);
+        addToQueues(cpu);
+        decode(cpu);
+        fetch(cpu);
+        cpu->clock++;
+    }
+
+    return 0;
+}
+

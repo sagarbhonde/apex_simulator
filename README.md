@@ -1,6 +1,21 @@
 ---------------------------------------------------------------------------------
 Out-of-order APEX Pipeline Simulator
 ---------------------------------------------------------------------------------
+Contributors:
+
+Sonu Gupta    --> Created ,designed and implemented classes for ROB,LSQ,URF
+
+Sagar Bhonde  --> Created ,designed and implemented classes for IQ,Function Units,BTB.
+
+We both have contributed equally and integrated out implementations.
+
+Details:
+
+- Individual classes have been created for each Unit such as. ROB,IQ,LSQ,URF.
+- Dependency is handled correctly, data is forwarded using 'Forward Bus' aka int_bus and mul_bases.
+- Handled all the possible cases for Control Flow Instructions.
+- ROB is capable of retiring atmost 2 instructions.
+- Every function unit works properly and spends the time as per given specification.
 
 @NOTE:  VALID Assembly code' which terminates with HALT is necessary. If Invalid 'assembly code' is given, program prints error and exits.
 
@@ -18,6 +33,10 @@ File-Info
 4) cpu.h          - Contains various data structures declarations needed by 'cpu.c'. You can edit as needed
 5) helper.h        - Contains helper function declarations, macros, constants etc.
 6) helper.c        - Conatains helper function definitions
+7) ROB.h/.c        - Conatains ROB related function definitions
+8) LSQ.h/.c        - Conatains LSQ related function definitions
+9) URF.h/.c        - Conatains URF related function definitions
+10) BTB.h/.c        - Conatains BTB related function definitions
 	 
 
 How to compile and run
