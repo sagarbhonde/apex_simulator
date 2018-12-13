@@ -25,7 +25,7 @@ public:
 	void printIssueQueue();
 	void updateIssueQueueEntries(int u_reg, int u_reg_value);
 	IQEntry sortTemporary(IQEntry selected_entries[]);
-	void flushIQEntries(int cfid);
+	void flushIQEntries(int cfid, int pc);
 };
 
 

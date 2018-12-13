@@ -24,7 +24,7 @@ int LSQ::add_instruction_to_LSQ(LSQ_entry entry) {
 	// entry is added if and only if slot is UNALLOCATED
 
 	if (entry.allocated == UNALLOCATED) {
-		entry.setM_status(0);
+		entry.setM_status(1);
 		entry.setM_index((tail)); // Assigning Slot ID here and then pushing in queue.
 		lsq_queue[tail] = entry;    // Adding to queue
 		lsq_queue[tail].allocated = ALLOCATED; // Mark slot status as 'ALLOCATED'

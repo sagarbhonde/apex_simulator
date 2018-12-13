@@ -33,10 +33,11 @@ public:
     void print_slot_contents(int index); // For logging indivisual slot
     friend ostream& operator<<(ostream& out, const ROB* rob); // For logging whole ROB.
     void print_rob(int limit);
-    bool flush_ROB_entries(int from_slot_id);
+    bool flush_ROB_entries(int from_slot_id,  void* cpu);
     bool check_with_rob_head(int pc_value);
     int get_slot_id_from_cfid(int cfid, int pc);
     int get_zero_flag_at_slot_id(int slot_id);
-};
+    Rob_entry* get_head_instruction_from_ROB();
+    };
 
 #endif //CIRCULAR_QUEUE_ROB_H

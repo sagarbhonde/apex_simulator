@@ -34,6 +34,8 @@ int IQEntry::getStatus() const {
 		if (strcmp("MOVC", this->opcode) == 0 || strcmp("BZ", this->opcode) == 0
 				|| strcmp("BNZ", this->opcode) == 0)
 			return 1;
+		if(strcmp(this->opcode, "JUMP") == 0 || strcmp("JAL", this->opcode) == 0)
+			return src1Valid == 1 ? 1 : 0;
 		return src1Valid == 1 && src2Valid == 1 ? 1 : 0;
 	}
 	return 0;
@@ -46,6 +48,10 @@ void IQEntry::setStatus() {
 			this->status = 1;
 		else if (src1Valid == 1 && src2Valid == 1)
 			this->status = 1;
+		else if(strcmp(this->opcode, "JUMP") == 0 || strcmp("JAL", this->opcode) == 0) {
+			if(src1Valid == 1)
+				this->status = 1;
+		}
 
 	}
 }

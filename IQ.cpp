@@ -35,9 +35,12 @@ IQEntry IQ::sortTemporary(IQEntry selected_entries[]) {
 	return selected_entries[0];
 }
 
-void IQ::flushIQEntries(int cfid) {
+void IQ::flushIQEntries(int cfid, int pc) {
 	for(int i = 0; i < IQ_SIZE; i++) {
 		if(issueQueue[i].CFID == cfid) {
+			if(issueQueue[i].pc == pc)
+				continue;
+
 			issueQueue[i].allocated = 0;
 		}
 	}
@@ -50,12 +53,13 @@ IQEntry IQ::getNextInstructionToIssue(int funType) {
 	temp.allocated = 0;
 	tempArray[0] = temp;
 	IQEntry e;
-
+	int j = 0;
 	for (int i = 0; i < IQ_SIZE; i++) {
 //		tempArray[i] = temp;
 		e = issueQueue[i];
 		if ((e.getStatus() == 1) && (e.fuType == funType) && (e.allocated == 1)) {
-			tempArray[i] = e;
+			tempArray[j] = e;
+			j++;
 		}
 	}
 	if (tempArray != 0) {
@@ -68,18 +72,18 @@ IQEntry IQ::getNextInstructionToIssue(int funType) {
 
 void IQ::updateIssueQueueEntries(int u_reg, int u_reg_value) {
 	for (int i = 0; i < IQ_SIZE; i++) {
-		IQEntry e = issueQueue[i];
-		if (e.allocated == 1) {
-			if (e.src1 == u_reg) {
-				e.src1Value = u_reg_value;
-				e.src1Valid = 1;
-			} else if (e.src2 == u_reg) {
-				e.src2Value = u_reg_value;
-				e.src1Valid = 1;
+		IQEntry *e = &issueQueue[i];
+		if (e->allocated == 1) {
+			if (e->src1 == u_reg) {
+				e->src1Value = u_reg_value;
+				e->src1Valid = 1;
+			} else if (e->src2 == u_reg) {
+				e->src2Value = u_reg_value;
+				e->src1Valid = 1;
 			}
 
-			if (e.src1Valid && e.src2Valid) // If both the sources are ready, means isntruction is ready to execute.
-				e.setStatus();
+			if (e->src1Valid && e->src2Valid) // If both the sources are ready, means isntruction is ready to execute.
+				e->setStatus();
 		}
 	}
 }
@@ -97,13 +101,16 @@ void IQ::updateIssueQueueEntries(int u_reg, int u_reg_value) {
  * if result == 1 then entry is removed else it is not
  * */
 int IQ::removeEntry(IQEntry * entry) {
+	IQEntry* temp;
 	int result = 0;
 	int i = 0;
 	while (result == 0 && i < IQ_SIZE) {
-		if (issueQueue[i].pc == entry->pc) {
-			issueQueue[i].allocated = 0;
+		temp = &issueQueue[i];
+		if (temp->pc == entry->pc) {
+			temp->allocated = 0;
 			result = 1;
 		}
+		i++;
 	}
 	return result;
 }

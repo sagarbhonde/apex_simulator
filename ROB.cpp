@@ -5,6 +5,8 @@
 
 #include "ROB.h"
 #include "helper.h"
+#include "cpu.h"
+
 using namespace std;
 
 int ROB::add_instruction_to_ROB(Rob_entry entry1) {
@@ -36,7 +38,7 @@ int ROB::get_slot_id_from_cfid(int cfid, int pc) {
 		if (rob_queue[head].m_pc_value == pc && rob_queue[head].m_CFID == cfid)
 			return head;
 
-	for (int i = head; i != tail; i++)
+	for (int i = head; i <= tail; i++)
 		if (rob_queue[i].m_pc_value == pc && rob_queue[i].m_CFID == cfid)
 			return i;
 
@@ -44,7 +46,7 @@ int ROB::get_slot_id_from_cfid(int cfid, int pc) {
 }
 
 int ROB::get_zero_flag_at_slot_id(int slot_id) {
-	if (rob_queue[slot_id].allocated == ALLOCATED)
+	if (rob_queue[slot_id].allocated != UNALLOCATED)
 		return rob_queue[slot_id].m_excodes;
 	return -1;
 }
@@ -129,7 +131,7 @@ void ROB::print_rob(int limit) {
 	}
 }
 
-bool ROB::update_ROB_slot(int pc_value, int unified_reg, int flag, int status,
+bool ROB::update_ROB_slot(int pc_value, int cfid, int flag, int status,
 		int result) {
 
 	/*
@@ -142,7 +144,7 @@ bool ROB::update_ROB_slot(int pc_value, int unified_reg, int flag, int status,
 
 	 */
 
-	int slot_id = get_slot_id_from_cfid(unified_reg, pc_value);
+	int slot_id = get_slot_id_from_cfid(cfid, pc_value);
 	Rob_entry* entry = &rob_queue[slot_id];
 
 	if (entry->getslot_status() != UNALLOCATED) {
@@ -163,12 +165,38 @@ bool ROB::update_ROB_slot(int pc_value, int unified_reg, int flag, int status,
 	return true;
 }
 
-bool ROB::flush_ROB_entries(int from_slot_id) {
+bool ROB::flush_ROB_entries(int from_slot_id, void* cpu) {
+
 	// Flushing ROB means, just setting status as unallocated for all instructions from head to tail as 'UNALLOCATED'.
-	for (int next = from_slot_id + 1; next != tail; next++)
-		rob_queue[next].setslot_status(UNALLOCATED);
+	for (int i = tail; i > from_slot_id; i--) {
+		//if(i == from_slot_id)
+		//	break;
+
+		if (rob_queue[i].allocated == ALLOCATED) {
+			rob_queue[i].setslot_status(UNALLOCATED);
+			// Add PRs back.
+			int temp = rob_queue[i].m_unified_register;
+			if(temp>=0 && temp<URF_SIZE) {
+				//APEX_CPU *apex_cpu = (APEX_CPU *) cpu;
+				//apex_cpu->urf->add_to_free_list(rob_queue[i].m_unified_register);
+			}
+		}
+	}
 
 	// update tail. So, when new instruction is added, new 'slot_id' will be assigned to it.
 	tail = from_slot_id;
 	return true;
 }
+
+
+Rob_entry *ROB::get_head_instruction_from_ROB() {
+    Rob_entry* entry;
+
+    if (isempty()) {
+        return NULL;
+    } else {
+        entry = &rob_queue[head];
+    }
+    return entry;
+}
+

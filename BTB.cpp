@@ -9,7 +9,7 @@
 #include <queue>
 
 BTB::BTB() {
-    for(int i = 0; i<CFID_SIZE;i++)
+    for(int i = 1; i<=CFID_SIZE;i++)
     {
         free_CFID_list.push_back(i);
     }
@@ -68,7 +68,7 @@ bool BTB::add_cfid(int cfid) {
 int BTB::get_last_prediction(int pc) {
 
     //@discuss can there be conflicts????????????????????
-    for(int i = 0; i<CFID_SIZE;i++)
+    for(int i = 1; i<=CFID_SIZE;i++)
     {
         if(prediction_table[i].pc == pc)
             return prediction_table[i].last_prediction;
